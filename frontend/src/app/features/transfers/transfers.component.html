@@ -1,0 +1,304 @@
+<app-header [pageTitle]="'Electronic Fund Transfer'" [pageSubtitle]="'Transfer funds securely with instant double-entry ledger settlement across SecureBank accounts.'" [pageKicker]="'INSTANT SETTLEMENT'">
+  <div class="transfers-page-wrap">
+
+    <!-- Error Banner -->
+    <div *ngIf="errorMessage" class="error-glow-banner">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Two-Column Layout -->
+    <div class="fintech-grid transfers-grid">
+      <!-- LEFT COLUMN: 3-Step Form OR Review Mode OR Success Receipt -->
+      <div class="col-span-8 left-transfer-col">
+        <!-- 1. ACTIVE TRANSFER FORM -->
+        <div *ngIf="!isReviewMode && !transferResult" class="transfer-card-panel">
+          <form (ngSubmit)="proceedToReview()">
+            <!-- STEP 1: SOURCE ACCOUNT -->
+            <div class="form-step-group">
+              <div class="step-header">
+                <span class="step-num-badge">1</span>
+                <div>
+                  <h4 class="step-heading">Select Source Account</h4>
+                  <span class="step-caption">Choose the debited account from your portfolio</span>
+                </div>
+              </div>
+
+              <div class="account-select-grid">
+                <div *ngFor="let acc of accounts"
+                     class="source-tile"
+                     [class.selected]="selectedSourceId === acc.id"
+                     (click)="selectedSourceId = acc.id">
+                  <div class="tile-top-row">
+                    <span class="acc-type-pill" [class.current]="acc.accountType === 'CURRENT'">{{ acc.accountType }}</span>
+                    <span class="acc-masked-num">{{ acc.maskedAccountNumber }}</span>
+                  </div>
+                  <div class="tile-balance-row">
+                    <span class="curr-sign">₹</span>
+                    <span class="tile-bal-amt">{{ acc.balance | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="tile-subtext">Available to transfer</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: DESTINATION -->
+            <div class="form-step-group">
+              <div class="step-header">
+                <span class="step-num-badge">2</span>
+                <div>
+                  <h4 class="step-heading">Beneficiary / Destination</h4>
+                  <span class="step-caption">Select a saved recipient or type a beneficiary account number</span>
+                </div>
+              </div>
+
+              <div class="fields-split-row">
+                <div class="field-col">
+                  <label class="field-label">Saved Beneficiaries</label>
+                  <div class="custom-select-wrap">
+                    <select [(ngModel)]="selectedBeneficiaryId" name="selectedBeneficiary" (change)="onBeneficiarySelect()" class="fintech-select">
+                      <option value="MANUAL">-- Enter Account Number Manually --</option>
+                      <option *ngFor="let b of beneficiaries" [value]="b.id">
+                        {{ b.beneficiaryName }} ({{ b.maskedAccountNumber }})
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field-col">
+                  <label class="field-label">Destination Account Number</label>
+                  <input type="text"
+                         [(ngModel)]="destinationAccountNumber"
+                         name="destAcc"
+                         placeholder="e.g. 1001004826"
+                         required
+                         class="fintech-input monospace-input" />
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3: AMOUNT & PURPOSE -->
+            <div class="form-step-group">
+              <div class="step-header">
+                <span class="step-num-badge">3</span>
+                <div>
+                  <h4 class="step-heading">Transfer Amount &amp; Remarks</h4>
+                  <span class="step-caption">Specify amount in INR and optional audit description</span>
+                </div>
+              </div>
+
+              <div class="fields-split-row">
+                <div class="field-col">
+                  <label class="field-label">Amount (₹ INR)</label>
+                  <div class="amount-input-box">
+                    <span class="amount-prefix">₹</span>
+                    <input type="number"
+                           [(ngModel)]="amount"
+                           name="amountVal"
+                           placeholder="0.00"
+                           min="1"
+                           step="0.01"
+                           required
+                           class="amount-large-input" />
+                  </div>
+                  <!-- Amount in Words -->
+                  <div *ngIf="amountInWords" class="amount-in-words-preview">
+                    <span class="words-label">IN WORDS:</span>
+                    <span class="words-text">{{ amountInWords }}</span>
+                  </div>
+                </div>
+
+                <div class="field-col">
+                  <label class="field-label">Description / Remarks (Optional)</label>
+                  <input type="text"
+                         [(ngModel)]="description"
+                         name="descVal"
+                         placeholder="e.g. Monthly rent, consultant fee, vendor invoice"
+                         class="fintech-input" />
+                  <span class="field-hint">This remark will appear on both party account statements.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="form-submit-row">
+              <button type="submit" class="btn-primary proceed-btn">
+                <span>Review Transfer Details</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 2. STEP 2: REVIEW MODE -->
+        <div *ngIf="isReviewMode && !transferResult" class="review-panel">
+          <div class="review-header">
+            <span class="modal-kicker">STEP 2 OF 2</span>
+            <h3>Confirm Transfer Authorization</h3>
+            <p>Please double check the details below. Once authorized, the funds will be transferred instantly via the double-entry ledger.</p>
+          </div>
+
+          <div class="review-details-card">
+            <div class="review-row">
+              <span class="r-label">From Debited Account</span>
+              <div class="r-val-box">
+                <strong class="r-val">{{ selectedAccount?.maskedAccountNumber }}</strong>
+                <span class="acc-type-pill">{{ selectedAccount?.accountType }}</span>
+              </div>
+            </div>
+
+            <div class="review-row">
+              <span class="r-label">To Credited Account</span>
+              <strong class="r-val monospace">{{ destinationAccountNumber }}</strong>
+            </div>
+
+            <div class="review-row highlight-row">
+              <span class="r-label">Transfer Amount</span>
+              <strong class="r-amount">₹ {{ amount | number:'1.2-2' }}</strong>
+            </div>
+
+            <div class="review-row" *ngIf="amountInWords">
+              <span class="r-label">Amount in Words</span>
+              <span class="r-words">{{ amountInWords }}</span>
+            </div>
+
+            <div class="review-row" *ngIf="description">
+              <span class="r-label">Remarks / Description</span>
+              <span class="r-val">{{ description }}</span>
+            </div>
+
+            <div class="review-row">
+              <span class="r-label">Remaining Balance After</span>
+              <strong class="r-val" *ngIf="selectedAccount && amount">₹ {{ (selectedAccount.balance - amount) | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+
+          <div class="review-actions-bar">
+            <button type="button" class="btn-ghost" (click)="isReviewMode = false" [disabled]="isSubmitting">
+              Back to Edit
+            </button>
+            <button type="button" class="btn-primary authorize-btn" (click)="confirmTransfer()" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Authorize &amp; Pay ₹{{ amount | number:'1.2-2' }}</span>
+              <span *ngIf="isSubmitting">Processing Transaction...</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. STEP 3: TRANSACTION SUCCESS RECEIPT -->
+        <div *ngIf="transferResult" class="success-receipt-panel">
+          <div class="success-header-col">
+            <div class="animated-check-circle">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <h3>Transfer Successful!</h3>
+            <div class="ref-badge">
+              <span>REFERENCE:</span>
+              <strong>{{ transferResult.transferReference }}</strong>
+            </div>
+          </div>
+
+          <div class="receipt-details-card">
+            <div class="receipt-row-item">
+              <span>Amount Sent</span>
+              <strong class="receipt-amount">₹ {{ transferResult.amount | number:'1.2-2' }}</strong>
+            </div>
+            <div class="receipt-row-item">
+              <span>Debited Account</span>
+              <strong class="monospace">{{ transferResult.sourceAccountNumber }}</strong>
+            </div>
+            <div class="receipt-row-item">
+              <span>Credited Account</span>
+              <strong class="monospace">{{ transferResult.destinationAccountNumber }}</strong>
+            </div>
+            <div class="receipt-row-item">
+              <span>Timestamp</span>
+              <span>{{ transferResult.timestamp | date:'medium' }}</span>
+            </div>
+            <div class="receipt-row-item">
+              <span>Updated Available Balance</span>
+              <strong class="monospace text-positive">₹ {{ transferResult.updatedSourceBalance | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+
+          <div class="receipt-action-buttons">
+            <button type="button" class="btn-ghost" (click)="downloadReceipt()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Download Receipt</span>
+            </button>
+            <button type="button" class="btn-primary" (click)="resetForm()">
+              <span>Make Another Transfer</span>
+            </button>
+            <a routerLink="/transactions" class="btn-ghost">
+              <span>View in Ledger</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Sticky "Transfer Summary" Glow Card -->
+      <div class="col-span-4 right-summary-col">
+        <div class="sticky-summary-card">
+          <div class="summary-top">
+            <div class="summary-chip">LIVE SUMMARY</div>
+            <h3>Transfer Summary</h3>
+            <p>Live calculated settlement preview</p>
+          </div>
+
+          <div class="summary-breakdown">
+            <div class="summary-item">
+              <span class="s-label">Debited From</span>
+              <div class="s-val-group">
+                <strong class="s-val">{{ selectedAccount?.maskedAccountNumber || 'None selected' }}</strong>
+                <span *ngIf="selectedAccount" class="s-balance-hint">Avail: ₹{{ selectedAccount.balance | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <div class="summary-item">
+              <span class="s-label">Credited To</span>
+              <strong class="s-val monospace">{{ destinationAccountNumber || 'Recipient account' }}</strong>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-item">
+              <span class="s-label">Transfer Amount</span>
+              <strong class="s-val font-mono">₹ {{ (amount || 0) | number:'1.2-2' }}</strong>
+            </div>
+
+            <div class="summary-item">
+              <span class="s-label">Transfer Fee (Zero)</span>
+              <span class="s-val text-positive">₹ 0.00</span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-total-row">
+              <div>
+                <span class="total-label">Total Debited</span>
+                <span class="total-sub">Includes 0% settlement fee</span>
+              </div>
+              <div class="total-figure">
+                <span class="curr-sign">₹</span>
+                <span class="total-amt">{{ (amount || 0) | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security note box inside summary -->
+          <div class="security-seal-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <div>
+              <strong>Instant Ledger Settlement</strong>
+              <p>Simulated double-entry ledger entry executed immediately upon authorization.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-header>

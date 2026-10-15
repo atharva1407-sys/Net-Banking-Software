@@ -1,0 +1,134 @@
+<app-header [pageTitle]="'Transaction History & Ledger'" [pageSubtitle]="'Immutable real-time debit and credit records across your SecureBank accounts.'" [pageKicker]="'FINANCIAL AUDIT TRAIL'">
+  <div class="transactions-page-wrap">
+    <!-- Top Action Group -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+      <button type="button" class="btn-ghost download-csv-btn" (click)="downloadCSV()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Download CSV</span>
+      </button>
+    </div>
+
+    <!-- Filter Control Row -->
+    <div class="filter-controls-card">
+      <div class="filter-item">
+        <label class="filter-label">ACCOUNT</label>
+        <div class="custom-select-wrap">
+          <select [(ngModel)]="selectedAccountId" (change)="onAccountChange()" class="fintech-select">
+            <option [ngValue]="null">All Accounts</option>
+            <option *ngFor="let acc of accounts" [ngValue]="acc.id">
+              {{ acc.accountType }} ({{ acc.maskedAccountNumber }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">DIRECTION</label>
+        <div class="custom-select-wrap">
+          <select [(ngModel)]="filterDirection" class="fintech-select">
+            <option value="ALL">All Directions (Credits &amp; Debits)</option>
+            <option value="DEBIT">Debits Only (-)</option>
+            <option value="CREDIT">Credits Only (+)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-item search-grow">
+        <label class="filter-label">SEARCH REFERENCE / KEYWORD</label>
+        <div class="search-input-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Filter by ref code, account, remarks..." class="fintech-input search-input" />
+        </div>
+      </div>
+
+      <div class="filter-item date-chip-item">
+        <label class="filter-label">AUDIT SCOPE</label>
+        <div class="audit-scope-pill">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Real-time Ledger</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ledger Table Panel -->
+    <div class="ledger-table-panel">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-state">
+        <span>Loading ledger entries...</span>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && filteredTransactions.length === 0" class="empty-state">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <p>No transaction records match the selected filter criteria.</p>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive-container" *ngIf="!isLoading && filteredTransactions.length > 0">
+        <table class="fintech-ledger-table">
+          <thead>
+            <tr>
+              <th>TIMESTAMP</th>
+              <th>REFERENCE ID</th>
+              <th>ACCOUNT</th>
+              <th>DESCRIPTION</th>
+              <th>DIRECTION</th>
+              <th class="text-right">AMOUNT (INR)</th>
+              <th class="text-right">BALANCE AFTER</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of filteredTransactions" class="ledger-row">
+              <td class="timestamp-cell">
+                <span class="date-part">{{ tx.createdAt | date:'mediumDate' }}</span>
+                <span class="time-part">{{ tx.createdAt | date:'shortTime' }}</span>
+              </td>
+              <td>
+                <span class="ref-chip">{{ tx.transactionReference }}</span>
+              </td>
+              <td class="account-cell">
+                <span class="monospace-acc">{{ tx.accountNumber }}</span>
+              </td>
+              <td class="desc-cell">
+                <span class="desc-text">{{ tx.description || 'Simulated Ledger Entry' }}</span>
+              </td>
+              <td>
+                <span class="direction-badge" [class.credit]="tx.direction === 'CREDIT'" [class.debit]="tx.direction === 'DEBIT'">
+                  <span class="dir-icon">{{ tx.direction === 'CREDIT' ? '↓' : '↑' }}</span>
+                  {{ tx.direction }}
+                </span>
+              </td>
+              <td class="text-right amount-cell" [class.credit]="tx.direction === 'CREDIT'" [class.debit]="tx.direction === 'DEBIT'">
+                {{ tx.direction === 'CREDIT' ? '+' : '-' }} ₹ {{ tx.amount | number:'1.2-2' }}
+              </td>
+              <td class="text-right balance-after-cell">
+                ₹ {{ tx.balanceAfter | number:'1.2-2' }}
+              </td>
+              <td>
+                <span class="status-chip">{{ tx.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="!isLoading && totalElements > 0">
+        <div class="pagination-info">
+          Showing <strong>{{ (currentPage * pageSize) + 1 }}</strong> - <strong>{{ ((currentPage + 1) * pageSize) > totalElements ? totalElements : ((currentPage + 1) * pageSize) }}</strong> of <strong>{{ totalElements }}</strong> entries
+        </div>
+
+        <div class="pagination-buttons">
+          <button type="button" class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0">
+            ‹ Previous
+          </button>
+          <span class="page-indicator">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+          <button type="button" class="page-btn" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">
+            Next ›
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-header>

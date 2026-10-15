@@ -1,0 +1,254 @@
+<div class="auth-app-frame">
+  <div class="auth-split-body">
+    <!-- LEFT PANEL: Glowing Gradient & Brand Advisory -->
+    <div class="auth-hero-panel">
+      <div class="hero-brand-row">
+        <span class="brand-glyph">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </span>
+        <span class="brand-name">SecureBank</span>
+      </div>
+
+      <div class="hero-center-content">
+        <span class="hero-kicker">FINTECH INTELLIGENCE</span>
+        <h1 class="hero-headline">Bank smarter.<br /><em>Live better.</em></h1>
+        <p class="hero-subtext">The next-generation digital net banking platform engineered with real-time double-entry ledger accuracy.</p>
+
+        <!-- Simulated Floating Card Preview -->
+        <div class="hero-preview-card">
+          <div class="p-card-top">
+            <span class="p-card-title">SAVINGS ACCOUNT</span>
+            <span class="p-card-status">ACTIVE</span>
+          </div>
+          <div class="p-card-num">•••• &nbsp; •••• &nbsp; •••• &nbsp; 2345</div>
+          <div class="p-card-bottom">
+            <div>
+              <span class="p-label">AVAILABLE BALANCE</span>
+              <div class="p-amt">₹ 50,000.00</div>
+            </div>
+            <div class="p-brand-badge">VISA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Advisory Box at bottom of hero -->
+      <div class="hero-security-advisory">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+        <div>
+          <strong>256-Bit Encrypted Security</strong>
+          <p>Never disclose your password, PIN, or OTP to anyone. SecureBank will never call requesting verification codes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Dark Auth Card -->
+    <div class="auth-card-panel">
+      <!-- Mode Tabs (Customer Login / Sign Up) -->
+      <div class="auth-tabs-row" role="tablist">
+        <button type="button"
+                role="tab"
+                [attr.aria-selected]="mode === 'login'"
+                [class.active]="mode === 'login'"
+                (click)="setMode('login')"
+                class="auth-tab-btn">
+          Customer Login
+        </button>
+        <button type="button"
+                role="tab"
+                [attr.aria-selected]="mode === 'signup'"
+                [class.active]="mode === 'signup'"
+                (click)="setMode('signup')"
+                class="auth-tab-btn">
+          Sign Up
+        </button>
+      </div>
+
+      <!-- Form Heading -->
+      <div class="auth-form-head">
+        <h2>{{ mode === 'login' ? 'Sign in to NetBanking' : 'Create your account' }}</h2>
+        <p>{{ mode === 'login' ? 'Enter your Customer ID and password to access your dashboard.' : 'Open your digital profile in under 2 minutes.' }}</p>
+      </div>
+
+      <!-- Notice Alert -->
+      <div *ngIf="notice" class="auth-notice-alert" [class.error]="noticeType === 'error'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{{ notice }}</span>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form *ngIf="mode === 'login'" #loginForm="ngForm" (ngSubmit)="submitLogin(loginForm)" novalidate class="auth-form">
+        <div class="form-group">
+          <label for="customerId" class="input-label">Customer ID / User ID</label>
+          <div class="input-with-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon">
+              <circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+            </svg>
+            <input id="customerId"
+                   name="customerId"
+                   [(ngModel)]="login.customerId"
+                   required
+                   autocomplete="username"
+                   placeholder="e.g. customer101"
+                   class="auth-input monospace-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-link">
+            <label for="loginPassword" class="input-label">Password</label>
+            <a href="#forgot" (click)="$event.preventDefault(); setNotice('Demo: Use customer101 / Password@123', 'success')" class="forgot-link">
+              Forgot password?
+            </a>
+          </div>
+          <div class="input-with-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input id="loginPassword"
+                   name="password"
+                   [(ngModel)]="login.password"
+                   [type]="showPassword ? 'text' : 'password'"
+                   required
+                   autocomplete="current-password"
+                   placeholder="Enter your account password"
+                   class="auth-input" />
+            <button type="button" class="eye-toggle-btn" (click)="showPassword = !showPassword" aria-label="Toggle password visibility">
+              <svg *ngIf="!showPassword" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showPassword" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="remember-row">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember" [(ngModel)]="login.remember" />
+            <span>Remember Customer ID</span>
+          </label>
+          <span class="ssl-shield-badge">
+            <span class="green-dot"></span> 256-bit SSL
+          </span>
+        </div>
+
+        <button type="submit" class="btn-primary auth-submit-btn" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Sign in securely</span>
+          <span *ngIf="isLoading">Signing in...</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <div class="auth-divider">
+          <span>NEW TO SECUREBANK?</span>
+        </div>
+
+        <button type="button" class="btn-ghost switch-mode-btn" (click)="setMode('signup')">
+          Open your digital banking profile
+        </button>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form *ngIf="mode === 'signup'" #signupForm="ngForm" (ngSubmit)="submitSignup(signupForm)" novalidate class="auth-form">
+        <div class="form-row-2col">
+          <div class="form-group">
+            <label for="fullName" class="input-label">Full Name</label>
+            <div class="input-with-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+              <input id="fullName" name="fullName" [(ngModel)]="signup.fullName" required placeholder="Aarav Sharma" class="auth-input" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="signupCustomerId" class="input-label">Choose User ID</label>
+            <div class="input-with-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input id="signupCustomerId" name="signupCustomerId" [(ngModel)]="signup.customerId" required minlength="4" placeholder="customer102" class="auth-input monospace-input" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="input-label">Email Address</label>
+          <div class="input-with-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input id="email" name="email" [(ngModel)]="signup.email" type="email" required email placeholder="aarav@example.com" class="auth-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="mobile" class="input-label">Mobile Number</label>
+          <div class="input-with-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="input-icon"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            <input id="mobile" name="mobile" [(ngModel)]="signup.mobile" type="tel" required pattern="[0-9]{10}" maxlength="10" placeholder="9876543210" class="auth-input" />
+          </div>
+        </div>
+
+        <div class="form-row-2col">
+          <div class="form-group">
+            <label for="signupPassword" class="input-label">Create Password</label>
+            <div class="input-with-icon">
+              <input id="signupPassword"
+                     name="signupPassword"
+                     [(ngModel)]="signup.password"
+                     [type]="showPassword ? 'text' : 'password'"
+                     required
+                     minlength="8"
+                     placeholder="Min. 8 chars"
+                     class="auth-input" />
+              <button type="button" class="eye-toggle-btn" (click)="showPassword = !showPassword">
+                <svg *ngIf="!showPassword" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg *ngIf="showPassword" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword" class="input-label">Confirm Password</label>
+            <div class="input-with-icon">
+              <input id="confirmPassword"
+                     name="confirmPassword"
+                     [(ngModel)]="signup.confirmPassword"
+                     [type]="showConfirmPassword ? 'text' : 'password'"
+                     required
+                     minlength="8"
+                     placeholder="Repeat password"
+                     class="auth-input" />
+              <button type="button" class="eye-toggle-btn" (click)="showConfirmPassword = !showConfirmPassword">
+                <svg *ngIf="!showConfirmPassword" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg *ngIf="showConfirmPassword" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Strength Meter -->
+        <div *ngIf="signup.password" class="strength-meter-box">
+          <div class="strength-bar-track">
+            <div class="strength-bar-fill" [ngClass]="passwordStrength.colorClass" [style.width.%]="passwordStrength.percent"></div>
+          </div>
+          <span class="strength-label">Password Strength: <strong>{{ passwordStrength.label }}</strong></span>
+        </div>
+
+        <label class="checkbox-label terms-check">
+          <input type="checkbox" name="agree" [(ngModel)]="signup.agree" required />
+          <span>I agree to the Terms of Service &amp; Privacy Policy.</span>
+        </label>
+
+        <button type="submit" class="btn-primary auth-submit-btn" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Create account</span>
+          <span *ngIf="isLoading">Creating account...</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <p class="switch-bottom-text">
+          Already registered? <button type="button" class="link-btn" (click)="setMode('login')">Sign in</button>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

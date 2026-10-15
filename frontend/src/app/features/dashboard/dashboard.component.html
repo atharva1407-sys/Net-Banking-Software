@@ -1,0 +1,356 @@
+<app-header>
+  <div class="fintech-grid dashboard-widgets-grid">
+    <!-- ======================================================================
+         ROW 1 (3 Widgets: AI Insights, Balance Overview, Monthly Spending)
+         ====================================================================== -->
+
+    <!-- WIDGET 1: AI Insights (4 Columns) -->
+    <section class="col-span-4 fintech-card insight-card-widget" aria-label="AI Insights">
+      <div class="card-header">
+        <div class="header-left-title">
+          <span class="ai-sparkle-icon">✦</span>
+          <h3>AI Insights</h3>
+        </div>
+        <a routerLink="/statements" class="card-action-btn" aria-label="View insights statement">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+      </div>
+
+      <!-- Glowing Neon Sparkline Wave with Peak Badge -->
+      <div class="neon-wave-container">
+        <svg class="neon-wave-svg" viewBox="0 0 320 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="neonGlowGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#1E3A8A" stop-opacity="0.0"/>
+            </linearGradient>
+            <filter id="neonBlur" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          <path d="M 0 80 Q 50 85 90 60 T 170 30 T 250 55 T 320 40 L 320 100 L 0 100 Z" fill="url(#neonGlowGrad)"/>
+          <path d="M 0 80 Q 50 85 90 60 T 170 30 T 250 55 T 320 40" fill="none" stroke="#60A5FA" stroke-width="3" filter="url(#neonBlur)"/>
+          <circle cx="170" cy="30" r="4.5" fill="#FFFFFF" stroke="#3B82F6" stroke-width="3"/>
+        </svg>
+
+        <!-- Peak Pill Badge (+ 12%) -->
+        <div class="wave-peak-pill">+ 12%</div>
+      </div>
+
+      <div class="insight-card-footer">
+        <p class="insight-text-msg">{{ insightMessage }}</p>
+        <button type="button" class="round-icon-action" routerLink="/transactions" aria-label="Explore transactions">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- WIDGET 2: Balance Overview (4 Columns) -->
+    <section class="col-span-4 fintech-card balance-card-widget" aria-label="Balance Overview">
+      <div class="card-header">
+        <div class="header-left-title">
+          <h3>Balance Overview</h3>
+          <span class="eye-icon-chip" title="Verified Authoritative Balance">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+        </div>
+        <a routerLink="/accounts" class="card-action-btn" aria-label="Manage accounts">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+      </div>
+
+      <div class="balance-figure-row">
+        <span class="curr-sign">₹</span>
+        <span class="big-balance-amount">{{ totalBalance | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="delta-chip-row">
+        <span class="delta-green-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+          12%
+        </span>
+        <span class="delta-text-sub">from last month</span>
+      </div>
+
+      <!-- Transaction and Category Pills -->
+      <div class="meta-chips-row">
+        <div class="meta-info-chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          <span>{{ recentTransactions.length > 0 ? recentTransactions.length : 44 }} transactions</span>
+        </div>
+        <div class="meta-info-chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>12 categories</span>
+        </div>
+      </div>
+
+      <!-- Vertical Pill Bar Chart (matching reference) -->
+      <div class="pill-bar-chart">
+        <div *ngFor="let h of barHeights; let i = index"
+             class="bar-track"
+             [class.highlight]="i === 8 || i === 11">
+          <div class="bar-fill" [style.height.%]="h"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WIDGET 3: Monthly Spending Gauge (4 Columns) -->
+    <section class="col-span-4 fintech-card spending-gauge-card" aria-label="Monthly Spending">
+      <div class="card-header">
+        <h3>Monthly Spending</h3>
+        <a routerLink="/statements" class="card-action-btn" aria-label="View spending statements">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+      </div>
+
+      <!-- Horseshoe Ring Arc Gauge (Matching Reference) -->
+      <div class="gauge-center-box">
+        <div class="gauge-svg-wrapper">
+          <svg viewBox="0 0 200 170" class="semicircle-gauge-svg">
+            <defs>
+              <filter id="gaugeNeonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+            <!-- Background Track Arc (260 deg) -->
+            <circle cx="100" cy="85" r="64"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.08)"
+                    stroke-width="15"
+                    stroke-linecap="round"
+                    stroke-dasharray="289.5 112.6"
+                    transform="rotate(140 100 85)" />
+            <!-- Blue Spent Progress Arc (58% of 260 deg) -->
+            <circle cx="100" cy="85" r="64"
+                    fill="none"
+                    stroke="#3B82F6"
+                    stroke-width="15"
+                    stroke-linecap="round"
+                    stroke-dasharray="167.9 402.1"
+                    transform="rotate(140 100 85)"
+                    class="gauge-blue-fill"
+                    filter="url(#gaugeNeonGlow)" />
+          </svg>
+          <!-- Dead-Center in the Ring Hole -->
+          <div class="gauge-center-text">
+            <span class="gauge-percent-val">58%</span>
+            <span class="gauge-sub-lbl">of monthly limit</span>
+          </div>
+        </div>
+
+        <div class="gauge-legend-row">
+          <div class="legend-dot-item">
+            <span class="legend-circle blue"></span>
+            <span>Spent</span>
+          </div>
+          <div class="legend-dot-item">
+            <span class="legend-circle grey"></span>
+            <span>Remaining</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         ROW 2 (Recent Transactions Wide Table + Quick Actions & Categories)
+         ====================================================================== -->
+
+    <!-- WIDGET 4: Recent Transactions (8 Columns) -->
+    <section class="col-span-8 fintech-card recent-tx-widget" aria-label="Recent Transactions">
+      <div class="card-header">
+        <h3>Recent Transactions</h3>
+        <a routerLink="/transactions" class="card-link-action">View all →</a>
+      </div>
+
+      <div class="transactions-table-wrap">
+        <table class="fintech-table">
+          <thead>
+            <tr>
+              <th>Merchant</th>
+              <th>Date &amp; Time</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Balance</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- If we have real transactions from DB, render them -->
+            <tr *ngFor="let tx of recentTransactions" class="tx-table-row">
+              <td class="merchant-cell">
+                <span class="merchant-avatar">{{ getMerchantIcon(tx) }}</span>
+                <div class="merchant-meta">
+                  <strong class="merchant-title">{{ tx.description || 'Ledger Settlement' }}</strong>
+                </div>
+              </td>
+              <td class="datetime-cell">
+                <span class="date-str">{{ tx.createdAt | date:'mediumDate' }}</span>
+                <span class="time-str">{{ tx.createdAt | date:'shortTime' }}</span>
+              </td>
+              <td>
+                <span class="type-badge" [class.credit]="tx.direction === 'CREDIT'" [class.debit]="tx.direction === 'DEBIT'">
+                  {{ tx.direction === 'CREDIT' ? 'Credit' : 'Debit' }}
+                </span>
+              </td>
+              <td class="amount-cell" [class.credit]="tx.direction === 'CREDIT'" [class.debit]="tx.direction === 'DEBIT'">
+                {{ tx.direction === 'CREDIT' ? '+' : '-' }} ₹ {{ tx.amount | number:'1.2-2' }}
+              </td>
+              <td class="balance-cell font-mono">
+                ₹ {{ tx.balanceAfter | number:'1.2-2' }}
+              </td>
+              <td class="action-menu-cell">
+                <button type="button" class="three-dots-btn" aria-label="Transaction options">⋮</button>
+              </td>
+            </tr>
+
+            <!-- Fallback demo merchant rows matching the reference image when only 1-2 live items exist -->
+            <tr *ngIf="recentTransactions.length < 2" class="tx-table-row">
+              <td class="merchant-cell">
+                <span class="merchant-avatar brand-ps">🎮</span>
+                <div class="merchant-meta"><strong class="merchant-title">PlayStation</strong></div>
+              </td>
+              <td class="datetime-cell"><span class="date-str">Mar 31, 2026</span><span class="time-str">3:20 PM</span></td>
+              <td><span class="type-badge credit">Credit</span></td>
+              <td class="amount-cell credit">+ ₹ 19.99</td>
+              <td class="balance-cell font-mono">₹ 50,000.00</td>
+              <td class="action-menu-cell"><button type="button" class="three-dots-btn">⋮</button></td>
+            </tr>
+
+            <tr *ngIf="recentTransactions.length < 3" class="tx-table-row">
+              <td class="merchant-cell">
+                <span class="merchant-avatar brand-netflix">🎬</span>
+                <div class="merchant-meta"><strong class="merchant-title">Netflix</strong></div>
+              </td>
+              <td class="datetime-cell"><span class="date-str">Mar 29, 2026</span><span class="time-str">5:11 PM</span></td>
+              <td><span class="type-badge debit">Debit</span></td>
+              <td class="amount-cell debit">- ₹ 30.00</td>
+              <td class="balance-cell font-mono">₹ 49,980.01</td>
+              <td class="action-menu-cell"><button type="button" class="three-dots-btn">⋮</button></td>
+            </tr>
+
+            <tr *ngIf="recentTransactions.length < 4" class="tx-table-row">
+              <td class="merchant-cell">
+                <span class="merchant-avatar brand-airbnb">🏠</span>
+                <div class="merchant-meta"><strong class="merchant-title">Airbnb</strong></div>
+              </td>
+              <td class="datetime-cell"><span class="date-str">Mar 29, 2026</span><span class="time-str">1:20 PM</span></td>
+              <td><span class="type-badge debit">Debit</span></td>
+              <td class="amount-cell debit">- ₹ 300.00</td>
+              <td class="balance-cell font-mono">₹ 50,010.01</td>
+              <td class="action-menu-cell"><button type="button" class="three-dots-btn">⋮</button></td>
+            </tr>
+
+            <tr *ngIf="recentTransactions.length < 5" class="tx-table-row">
+              <td class="merchant-cell">
+                <span class="merchant-avatar brand-tommy">👤</span>
+                <div class="merchant-meta"><strong class="merchant-title">Tommy C.</strong></div>
+              </td>
+              <td class="datetime-cell"><span class="date-str">Mar 27, 2026</span><span class="time-str">2:31 AM</span></td>
+              <td><span class="type-badge credit">Credit</span></td>
+              <td class="amount-cell credit">+ ₹ 27.00</td>
+              <td class="balance-cell font-mono">₹ 50,310.01</td>
+              <td class="action-menu-cell"><button type="button" class="three-dots-btn">⋮</button></td>
+            </tr>
+
+            <tr *ngIf="recentTransactions.length < 6" class="tx-table-row">
+              <td class="merchant-cell">
+                <span class="merchant-avatar brand-apple">🍎</span>
+                <div class="merchant-meta"><strong class="merchant-title">Apple</strong></div>
+              </td>
+              <td class="datetime-cell"><span class="date-str">Mar 27, 2026</span><span class="time-str">11:04 PM</span></td>
+              <td><span class="type-badge debit">Debit</span></td>
+              <td class="amount-cell debit">- ₹ 10.00</td>
+              <td class="balance-cell font-mono">₹ 50,283.01</td>
+              <td class="action-menu-cell"><button type="button" class="three-dots-btn">⋮</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RIGHT STACKED COLUMN (4 Columns): Quick Actions & Spending by Category -->
+    <div class="col-span-4 right-column-stack">
+      <!-- WIDGET 5: Quick Actions Card -->
+      <section class="fintech-card quick-actions-widget" aria-label="Quick Actions">
+        <div class="card-header">
+          <h3>Quick Actions</h3>
+        </div>
+
+        <div class="quick-actions-2x2-grid">
+          <!-- 1. Transfer Money -->
+          <a routerLink="/transfers" class="quick-tile highlight-blue">
+            <span class="tile-icon-bubble">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </span>
+            <div class="tile-label-block">
+              <strong>Transfer</strong>
+              <span>Money</span>
+            </div>
+          </a>
+
+          <!-- 2. View Accounts -->
+          <a routerLink="/accounts" class="quick-tile">
+            <span class="tile-icon-bubble">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </span>
+            <div class="tile-label-block">
+              <strong>View</strong>
+              <span>Accounts</span>
+            </div>
+          </a>
+
+          <!-- 3. Pay to Beneficiary -->
+          <a routerLink="/beneficiaries" class="quick-tile">
+            <span class="tile-icon-bubble">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </span>
+            <div class="tile-label-block">
+              <strong>Pay to</strong>
+              <span>Beneficiary</span>
+            </div>
+          </a>
+
+          <!-- 4. Download Statement -->
+          <a routerLink="/statements" class="quick-tile">
+            <span class="tile-icon-bubble">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </span>
+            <div class="tile-label-block">
+              <strong>Download</strong>
+              <span>Statement</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- WIDGET 6: Spending by Category Card -->
+      <section class="fintech-card category-breakdown-widget" aria-label="Spending by Category">
+        <div class="card-header">
+          <h3>Spending by Category</h3>
+          <a routerLink="/statements" class="card-link-action">View all →</a>
+        </div>
+
+        <div class="category-bars-list">
+          <div *ngFor="let cat of categories" class="category-row-item">
+            <div class="cat-label-row">
+              <div class="cat-name-group">
+                <span class="cat-color-dot" [style.background-color]="cat.color"></span>
+                <span class="cat-name">{{ cat.name }}</span>
+              </div>
+              <div class="cat-values-group">
+                <span class="cat-amt font-mono">₹ {{ cat.amount | number:'1.2-2' }}</span>
+                <span class="cat-percent-badge">{{ cat.percent }}%</span>
+              </div>
+            </div>
+
+            <div class="cat-progress-track">
+              <div class="cat-progress-fill" [style.width.%]="cat.percent" [style.background-color]="cat.color"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</app-header>

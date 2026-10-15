@@ -1,0 +1,123 @@
+<app-header [pageTitle]="'Manage Beneficiaries'" [pageSubtitle]="'Save and manage recipient bank accounts for fast, seamless funds transfer without re-entering account numbers.'" [pageKicker]="'PAYEE DIRECTORY'">
+  <div class="beneficiaries-page-wrap">
+    <!-- Top Action Row -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+      <button type="button" class="btn-primary" (click)="showAddModal = true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>+ Add Beneficiary</span>
+      </button>
+    </div>
+
+    <!-- Alert Notice -->
+    <div *ngIf="notice" class="fintech-notice">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span>{{ notice }}</span>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <span>Loading saved beneficiaries...</span>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && beneficiaries.length === 0" class="empty-state-card">
+      <div class="empty-icon-circle">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>No Beneficiaries Added Yet</h3>
+      <p>Save payees to send funds quickly without having to type account numbers each time.</p>
+      <button type="button" class="btn-primary" (click)="showAddModal = true">+ Add First Beneficiary</button>
+    </div>
+
+    <!-- Beneficiaries Grid -->
+    <div class="fintech-grid" *ngIf="!isLoading && beneficiaries.length > 0">
+      <div *ngFor="let b of beneficiaries" class="col-span-4 beneficiary-card-widget">
+        <div class="b-card-head">
+          <div class="b-avatar-group">
+            <div class="b-avatar">{{ b.beneficiaryName.charAt(0).toUpperCase() }}</div>
+            <div class="b-name-block">
+              <h4 class="b-name">{{ b.beneficiaryName }}</h4>
+              <span class="nickname-chip" *ngIf="b.nickname">{{ b.nickname }}</span>
+            </div>
+          </div>
+          <button type="button" class="remove-payee-btn" (click)="deleteBeneficiary(b.id)" title="Remove Beneficiary" aria-label="Remove payee">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+
+        <div class="b-card-details">
+          <div class="b-detail-row">
+            <span class="b-label">ACCOUNT NUMBER</span>
+            <strong class="b-val monospace">{{ b.maskedAccountNumber }}</strong>
+          </div>
+          <div class="b-detail-row">
+            <span class="b-label">BANK</span>
+            <span class="b-val">{{ b.bankName }}</span>
+          </div>
+          <div class="b-detail-row">
+            <span class="b-label">IFSC CODE</span>
+            <span class="b-val monospace">{{ b.ifscCode }}</span>
+          </div>
+        </div>
+
+        <div class="b-card-footer">
+          <a [routerLink]="['/transfers']" [queryParams]="{destAccount: b.accountNumber}" class="btn-primary send-money-btn">
+            <span>Send Money</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right-Side Slide-in Drawer for Adding Beneficiary -->
+    <div class="drawer-backdrop" *ngIf="showAddModal" (click)="showAddModal = false">
+      <div class="drawer-panel" (click)="$event.stopPropagation()">
+        <div class="drawer-header">
+          <div>
+            <span class="page-kicker">NEW PAYEE</span>
+            <h3>Add Beneficiary</h3>
+            <p>Save recipient details for instant transfers.</p>
+          </div>
+          <button type="button" class="drawer-close-btn" (click)="showAddModal = false">✕</button>
+        </div>
+
+        <div *ngIf="errorMessage" class="drawer-error">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <form (ngSubmit)="addBeneficiary()" class="drawer-form">
+          <div class="form-group">
+            <label class="field-label">Beneficiary Full Name *</label>
+            <input type="text" [(ngModel)]="newBeneficiary.beneficiaryName" name="bName" placeholder="e.g. Priya Patel" required class="fintech-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">Account Number *</label>
+            <input type="text" [(ngModel)]="newBeneficiary.accountNumber" name="bAcc" placeholder="e.g. 1001004826" required class="fintech-input monospace-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">Bank Name</label>
+            <input type="text" [(ngModel)]="newBeneficiary.bankName" name="bBank" class="fintech-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">IFSC Code</label>
+            <input type="text" [(ngModel)]="newBeneficiary.ifscCode" name="bIfsc" class="fintech-input monospace-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">Nickname / Tag (Optional)</label>
+            <input type="text" [(ngModel)]="newBeneficiary.nickname" name="bNick" placeholder="e.g. Landlord, Office, Family" class="fintech-input" />
+          </div>
+
+          <div class="drawer-actions">
+            <button type="button" class="btn-ghost" (click)="showAddModal = false">Cancel</button>
+            <button type="submit" class="btn-primary">Save Beneficiary</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</app-header>

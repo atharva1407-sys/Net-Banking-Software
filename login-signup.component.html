@@ -1,0 +1,174 @@
+<main class="auth-shell">
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="SecureBank home">
+      <span class="brand-mark" aria-hidden="true"><i></i><b></b></span>
+      <span class="brand-copy">
+        <strong>SecureBank</strong>
+        <small>Banking for a brighter tomorrow</small>
+      </span>
+    </a>
+    <nav class="top-links" aria-label="Main navigation">
+      <a href="#personal">Personal</a>
+      <a href="#business">Business</a>
+      <a href="#about">About us</a>
+      <a href="#help">Help &amp; Support</a>
+    </nav>
+    <span class="secure-chip"><span class="secure-dot"></span> Secure banking</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow"><span class="eyebrow-line"></span> YOUR MONEY. YOUR FUTURE.</div>
+      <h1>Bank smarter.<br /><em>Live better.</em></h1>
+      <p class="hero-intro">A simpler, safer way to manage your money — anytime, anywhere.</p>
+
+      <div class="benefit-list">
+        <div class="benefit">
+          <span class="benefit-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.5-3 7.5-7 10-4-2.5-7-5.5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          </span>
+          <span><strong>Protected by design</strong><small>Security-first access to your account</small></span>
+        </div>
+        <div class="benefit">
+          <span class="benefit-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg>
+          </span>
+          <span><strong>Banking made effortless</strong><small>Accounts and transfers in one place</small></span>
+        </div>
+        <div class="benefit">
+          <span class="benefit-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </span>
+          <span><strong>Always within reach</strong><small>Access your banking when you need it</small></span>
+        </div>
+      </div>
+
+      <div class="hero-footer">
+        <span class="footer-shield">✓</span>
+        <span><strong>Your security matters</strong><small>Never share your password or verification code.</small></span>
+      </div>
+    </div>
+
+    <div class="visual-panel" aria-hidden="true">
+      <div class="orb orb-one"></div>
+      <div class="orb orb-two"></div>
+      <div class="visual-label"><span class="live-dot"></span> Banking, on your terms</div>
+      <div class="visual-card card-back">
+        <div class="mini-card-top"><span>SecureBank</span><span>•••</span></div>
+        <div class="mini-card-chip"></div>
+        <div class="mini-card-number">•••• &nbsp; •••• &nbsp; •••• &nbsp; 4826</div>
+        <div class="mini-card-bottom"><span>DEBIT</span><span>VISA</span></div>
+      </div>
+      <div class="visual-card card-front">
+        <div class="account-card-head"><span>YOUR ACCOUNT</span><span class="card-menu">•••</span></div>
+        <div class="account-card-title">Everyday Savings</div>
+        <div class="account-card-number">•••• •••• 2345</div>
+        <div class="balance-label">Available balance</div>
+        <div class="fake-balance">₹ 50,000<span>.00</span></div>
+        <div class="card-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="card-foot"><span>Monthly overview</span><strong>+ 8.4% <small>↗</small></strong></div>
+      </div>
+      <div class="floating-note"><span class="note-icon">↗</span><span><small>Quick transfer</small><strong>Easy. Secure. Done.</strong></span></div>
+      <div class="visual-caption">A clearer view of your finances.</div>
+    </div>
+
+    <section class="auth-card" aria-label="Account access">
+      <div class="auth-heading">
+        <div class="auth-icon"><span class="brand-mark small" aria-hidden="true"><i></i><b></b></span></div>
+        <div>
+          <p class="auth-kicker">WELCOME TO SECUREBANK</p>
+          <h2>{{ mode === 'login' ? 'Sign in to NetBanking' : 'Create your account' }}</h2>
+          <p class="auth-subtitle">{{ mode === 'login' ? 'Access your accounts securely.' : 'Get started with simple, secure banking.' }}</p>
+        </div>
+      </div>
+
+      <div class="mode-tabs" role="tablist" aria-label="Authentication options">
+        <button type="button" role="tab" [attr.aria-selected]="mode === 'login'" [class.active]="mode === 'login'" (click)="setMode('login')">Customer Login</button>
+        <button type="button" role="tab" [attr.aria-selected]="mode === 'signup'" [class.active]="mode === 'signup'" (click)="setMode('signup')">Sign Up</button>
+      </div>
+
+      <div *ngIf="notice" class="notice" [class.error]="noticeType === 'error'" role="status">{{ notice }}</div>
+
+      <form *ngIf="mode === 'login'" #loginForm="ngForm" (ngSubmit)="submitLogin(loginForm)" novalidate>
+        <label for="customerId">Customer ID / User ID</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.5-4 2.8-6 7-6s6.5 2 7 6"/></svg>
+          <input id="customerId" name="customerId" [(ngModel)]="login.customerId" required autocomplete="username" placeholder="Enter your Customer ID" />
+        </div>
+
+        <div class="label-row"><label for="loginPassword">Password</label><a href="#forgot-password" (click)="$event.preventDefault(); setNotice('Password reset can be connected to your backend.', 'success')">Forgot password?</a></div>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg>
+          <input id="loginPassword" name="password" [(ngModel)]="login.password" [type]="showPassword ? 'text' : 'password'" required autocomplete="current-password" placeholder="Enter your password" />
+          <button class="eye-button" type="button" (click)="showPassword = !showPassword" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+          </button>
+        </div>
+
+        <div class="form-options">
+          <label class="check-label"><input type="checkbox" name="remember" [(ngModel)]="login.remember" /> <span>Remember Customer ID</span></label>
+          <span class="secure-inline"><span></span> Protected connection</span>
+        </div>
+
+        <button class="primary-button" type="submit">Sign in securely <span>→</span></button>
+        <div class="form-divider"><span>NEW TO SECUREBANK?</span></div>
+        <button class="secondary-button" type="button" (click)="setMode('signup')">Open your digital banking profile</button>
+      </form>
+
+      <form *ngIf="mode === 'signup'" #signupForm="ngForm" (ngSubmit)="submitSignup(signupForm)" novalidate>
+        <div class="two-col">
+          <div>
+            <label for="fullName">Full name</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.5-4 2.8-6 7-6s6.5 2 7 6"/></svg>
+              <input id="fullName" name="fullName" [(ngModel)]="signup.fullName" required autocomplete="name" placeholder="Your full name" />
+            </div>
+          </div>
+          <div>
+            <label for="signupCustomerId">Choose User ID</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.5-4 2.8-6 7-6s6.5 2 7 6"/></svg>
+              <input id="signupCustomerId" name="signupCustomerId" [(ngModel)]="signup.customerId" required minlength="4" autocomplete="username" placeholder="Create a user ID" />
+            </div>
+          </div>
+        </div>
+        <label for="email">Email address</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+          <input id="email" name="email" [(ngModel)]="signup.email" type="email" required email autocomplete="email" placeholder="you@example.com" />
+        </div>
+        <label for="mobile">Mobile number</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M10 5h4M11 18.5h2"/></svg>
+          <input id="mobile" name="mobile" [(ngModel)]="signup.mobile" type="tel" required pattern="[0-9]{10}" maxlength="10" autocomplete="tel" placeholder="10-digit mobile number" />
+        </div>
+        <div class="two-col">
+          <div>
+            <label for="signupPassword">Create password</label>
+            <div class="input-wrap compact">
+              <input id="signupPassword" name="signupPassword" [(ngModel)]="signup.password" [type]="showPassword ? 'text' : 'password'" required minlength="8" autocomplete="new-password" placeholder="Min. 8 characters" />
+              <button class="eye-button" type="button" (click)="showPassword = !showPassword" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">◉</button>
+            </div>
+          </div>
+          <div>
+            <label for="confirmPassword">Confirm password</label>
+            <div class="input-wrap compact">
+              <input id="confirmPassword" name="confirmPassword" [(ngModel)]="signup.confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'" required minlength="8" autocomplete="new-password" placeholder="Repeat password" />
+              <button class="eye-button" type="button" (click)="showConfirmPassword = !showConfirmPassword" [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'">◉</button>
+            </div>
+          </div>
+        </div>
+        <label class="check-label terms"><input type="checkbox" name="agree" [(ngModel)]="signup.agree" required /> <span>I agree to the <a href="#terms">Terms of Use</a> and <a href="#privacy">Privacy Policy</a>.</span></label>
+        <button class="primary-button" type="submit">Create account <span>→</span></button>
+        <p class="switch-copy">Already registered? <button type="button" (click)="setMode('login')">Sign in</button></p>
+      </form>
+
+      <div class="card-security"><span class="lock-icon">⌑</span><span><strong>Your security is our priority</strong><small>Never share your password or one-time verification code.</small></span></div>
+    </section>
+  </section>
+
+  <footer class="page-footer">
+    <span>© 2026 SecureBank · Educational demo interface</span>
+    <span><a href="#security">Security</a><a href="#privacy">Privacy</a><a href="#support">Contact support</a></span>
+  </footer>
+</main>

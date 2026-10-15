@@ -1,0 +1,265 @@
+<div class="web-app-container">
+  <!-- LEFT SIDEBAR -->
+  <aside class="website-sidebar" aria-label="Application Navigation">
+    <div class="sidebar-top-section">
+      <!-- Brand Row -->
+      <div class="sidebar-brand-row">
+        <a routerLink="/dashboard" class="brand-link">
+          <span class="brand-logo-s">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </span>
+          <div class="brand-info">
+            <span class="brand-title-text">SecureBank</span>
+            <span class="brand-sub-tagline">Banking for a brighter tomorrow</span>
+          </div>
+        </a>
+
+        <button type="button" class="sidebar-menu-toggle" aria-label="Toggle menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation List -->
+      <nav class="sidebar-nav-list" aria-label="Primary Navigation">
+        <!-- 1. Dashboard -->
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="sidebar-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <!-- 2. Accounts -->
+        <a routerLink="/accounts" routerLinkActive="active" class="sidebar-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
+          <span>Accounts</span>
+        </a>
+
+        <!-- 3. Transfer Funds -->
+        <a routerLink="/transfers" routerLinkActive="active" class="sidebar-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          <span>Transfer Funds</span>
+        </a>
+
+        <!-- 4. Transactions -->
+        <a routerLink="/transactions" routerLinkActive="active" class="sidebar-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <line x1="14" y1="2" x2="14" y2="8"/>
+            <line x1="14" y1="8" x2="20" y2="8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span>Transactions</span>
+        </a>
+
+        <!-- 5. Statements -->
+        <a routerLink="/statements" routerLinkActive="active" class="sidebar-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          <span>Statements</span>
+        </a>
+
+        <!-- 6. Beneficiaries -->
+        <a routerLink="/beneficiaries" routerLinkActive="active" class="sidebar-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Beneficiaries</span>
+        </a>
+
+        <!-- 7. Notifications -->
+        <a (click)="toggleNotifications()" class="sidebar-nav-item" [class.active]="showNotifications" style="cursor: pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span>Notifications</span>
+          <span class="nav-badge-pill" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </a>
+
+        <!-- 8. Profile -->
+        <a (click)="toggleUserMenu()" class="sidebar-nav-item" style="cursor: pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Bottom Premium Promo Card (matching reference) -->
+    <div class="sidebar-bottom-section">
+      <div class="premium-banking-card">
+        <div class="card-holo-bg"></div>
+        <span class="premium-tag">PREMIUM BANKING</span>
+        <h4 class="premium-title">Secure.<br />Simple.<br />For your tomorrow.</h4>
+        <div class="premium-action-row">
+          <button type="button" class="round-arrow-btn" routerLink="/accounts" aria-label="Explore premium accounts">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT PANEL -->
+  <main class="website-main-panel">
+    <!-- Cosmic Blue Luminous Sphere Glow & Arc Line -->
+    <div class="cosmic-sphere-glow" aria-hidden="true"></div>
+    <div class="cosmic-arc-line" aria-hidden="true"></div>
+
+    <!-- Top Bar: Global Search + Notifications + User Profile -->
+    <header class="main-topbar">
+      <!-- Search Bar -->
+      <div class="global-search-pill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" placeholder="Search transactions, accounts, beneficiaries..." aria-label="Global search" />
+      </div>
+
+      <!-- Right Controls -->
+      <div class="topbar-right-actions">
+        <!-- Moon / Sun Theme Toggle Switch -->
+        <button class="theme-pill" (click)="themeService.toggleTheme()" [attr.aria-label]="'Toggle theme'">
+          <span class="pill-dot moon" [class.active]="themeService.theme() === 'dark'">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+          <span class="pill-dot sun" [class.active]="themeService.theme() === 'light'">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+        </button>
+
+        <!-- Notification Bell -->
+        <div class="notifications-bell-wrap">
+          <button type="button" class="notif-bell-btn" [class.active]="showNotifications" (click)="toggleNotifications()" aria-label="View notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span *ngIf="unreadCount > 0" class="bell-red-badge">{{ unreadCount }}</span>
+          </button>
+
+          <!-- Transparent click-away backdrop -->
+          <div *ngIf="showNotifications" class="popover-backdrop" (click)="showNotifications = false"></div>
+
+          <!-- Floating Glassmorphism Popover -->
+          <div *ngIf="showNotifications" class="notifications-popover" (click)="$event.stopPropagation()">
+            <div class="popover-head">
+              <div class="popover-title-row">
+                <h4>Notifications</h4>
+                <span class="count-tag">{{ unreadCount > 0 ? unreadCount + ' new' : notifications.length + ' total' }}</span>
+              </div>
+              <div class="popover-actions">
+                <button type="button" class="mark-all-btn" (click)="markAllAsRead()" *ngIf="unreadCount > 0">Mark all read</button>
+                <button type="button" class="close-popover-btn" (click)="showNotifications = false" aria-label="Close notifications">✕</button>
+              </div>
+            </div>
+
+            <div class="popover-body">
+              <div *ngIf="notifications.length === 0" class="empty-alerts">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity: 0.4; margin-bottom: 8px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <p>No notifications yet</p>
+                <small>You're all caught up!</small>
+              </div>
+
+              <div *ngFor="let n of notifications"
+                   class="notification-item"
+                   [class.unread]="!n.read"
+                   (click)="markRead(n)">
+                <div class="item-icon-col">
+                  <span class="notif-circle" [class.active]="!n.read"></span>
+                </div>
+                <div class="item-copy">
+                  <strong class="item-title">{{ n.title }}</strong>
+                  <p class="item-msg">{{ n.message }}</p>
+                  <small class="item-time">{{ n.createdAt | date:'medium' }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Profile Pill Badge -->
+        <div class="user-profile-badge-wrap" style="position: relative;">
+          <div class="user-profile-badge" (click)="toggleUserMenu()">
+            <div class="user-badge-avatar">{{ userInitial }}</div>
+            <div class="user-badge-info">
+              <span class="user-badge-name">{{ userFullName }}</span>
+              <span class="user-badge-id">Customer ID: {{ customerId }}</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="user-badge-chevron">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+
+          <!-- User Menu Backdrop -->
+          <div *ngIf="showUserMenu" class="popover-backdrop" (click)="showUserMenu = false"></div>
+
+          <!-- User Menu Dropdown -->
+          <div *ngIf="showUserMenu" class="user-menu-dropdown" (click)="$event.stopPropagation()">
+            <div class="user-menu-item" routerLink="/dashboard" (click)="showUserMenu = false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              <span>Dashboard</span>
+            </div>
+            <div class="user-menu-item" routerLink="/accounts" (click)="showUserMenu = false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/></svg>
+              <span>Manage Accounts</span>
+            </div>
+            <div class="user-menu-divider"></div>
+            <div class="user-menu-item logout" (click)="logout(); showUserMenu = false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Sign Out</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Top Greeting Section & Smart Quote Card -->
+    <section class="greeting-section-row">
+      <div class="greeting-copy-col">
+        <span class="greeting-time-tag">{{ pageKicker || 'Good day,' }}</span>
+        <h1 class="greeting-user-h1">
+          <ng-container *ngIf="!pageTitle">
+            {{ userFirstName }} <span class="gradient-surname">{{ userLastName }}</span>
+          </ng-container>
+          <ng-container *ngIf="pageTitle">
+            {{ pageTitle }}
+          </ng-container>
+        </h1>
+        <p class="greeting-subtitle-desc">
+          {{ pageSubtitle || 'Access your accounts, instant fund transfers, and statements securely.' }}
+        </p>
+      </div>
+    </section>
+
+    <!-- Projected Page Content -->
+    <ng-content></ng-content>
+  </main>
+</div>

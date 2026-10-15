@@ -1,0 +1,131 @@
+<app-header [pageTitle]="'Bank Accounts Management'" [pageSubtitle]="'Review balances, manage active accounts, or open a secondary deposit account.'" [pageKicker]="'PORTFOLIO OVERVIEW'">
+  <div class="accounts-page-wrap">
+    <!-- Page Action Row -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+      <button class="btn-primary" (click)="showCreateModal = true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>+ Open New Account</span>
+      </button>
+    </div>
+
+    <!-- Feedback Notice -->
+    <div *ngIf="notice" class="fintech-notice">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span>{{ notice }}</span>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <span>Loading accounts...</span>
+    </div>
+
+    <!-- Accounts Grid -->
+    <div class="fintech-grid" *ngIf="!isLoading">
+      <div *ngFor="let acc of accounts" class="col-span-6 account-card-widget">
+        <!-- Subtle Top Gradient Brand Strip -->
+        <div class="card-brand-strip" [class.current]="acc.accountType === 'CURRENT'"></div>
+
+        <div class="card-header-row">
+          <div class="chip-group">
+            <span class="account-type-chip" [class.current]="acc.accountType === 'CURRENT'">
+              {{ acc.accountType }} ACCOUNT
+            </span>
+            <span class="status-indicator-dot" [class.active]="acc.status === 'ACTIVE'">
+              <span class="dot-pulse"></span>
+              {{ acc.status }}
+            </span>
+          </div>
+
+          <div class="bank-symbol-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+        </div>
+
+        <div class="account-number-row">
+          <div class="acc-num-display">
+            <span class="acc-label">ACCOUNT NUMBER</span>
+            <div class="acc-copy-wrap">
+              <span class="masked-num">{{ acc.maskedAccountNumber }}</span>
+              <button type="button" class="copy-btn" (click)="copyAccountNumber(acc.accountNumber || acc.maskedAccountNumber)" title="Copy account number">
+                <svg *ngIf="copiedAcc !== (acc.accountNumber || acc.maskedAccountNumber)" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <svg *ngIf="copiedAcc === (acc.accountNumber || acc.maskedAccountNumber)" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <span *ngIf="copiedAcc === (acc.accountNumber || acc.maskedAccountNumber)" class="copied-badge">Copied!</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-balance-block">
+          <span class="balance-label">Authoritative Available Balance</span>
+          <div class="balance-figure">
+            <span class="curr-symbol">₹</span>
+            <span class="balance-amt">{{ acc.balance | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="account-meta-grid">
+          <div class="meta-item">
+            <span class="meta-title">CURRENCY</span>
+            <strong class="meta-val">{{ acc.currency }}</strong>
+          </div>
+          <div class="meta-item">
+            <span class="meta-title">OPENED ON</span>
+            <strong class="meta-val">{{ acc.createdAt | date:'mediumDate' }}</strong>
+          </div>
+        </div>
+
+        <div class="card-action-row">
+          <a [routerLink]="['/transfers']" [queryParams]="{sourceId: acc.id}" class="btn-primary card-action-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+            <span>Transfer Money</span>
+          </a>
+          <a [routerLink]="['/statements']" [queryParams]="{accountId: acc.id}" class="btn-ghost card-action-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>View Statement</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dark Fintech Modal for Opening New Account -->
+    <div class="modal-backdrop" *ngIf="showCreateModal" (click)="showCreateModal = false">
+      <div class="fintech-modal-panel" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <div class="modal-title-wrap">
+            <span class="modal-kicker">NEW DEPOSIT ACCOUNT</span>
+            <h3>Open New Bank Account</h3>
+          </div>
+          <button type="button" class="modal-close-btn" (click)="showCreateModal = false" aria-label="Close modal">✕</button>
+        </div>
+
+        <p class="modal-subtitle">Select the type of account you would like to provision under your SecureBank NetBanking portfolio.</p>
+
+        <div class="form-group">
+          <label class="field-label">Select Account Type</label>
+          <div class="account-type-options">
+            <label class="account-option-tile" [class.selected]="newAccountType === 'SAVINGS'">
+              <input type="radio" name="newAccType" value="SAVINGS" [(ngModel)]="newAccountType" />
+              <div class="tile-content">
+                <strong>Everyday Savings Account</strong>
+                <span>4.0% p.a. interest, zero minimum balance charges</span>
+              </div>
+            </label>
+
+            <label class="account-option-tile" [class.selected]="newAccountType === 'CURRENT'">
+              <input type="radio" name="newAccType" value="CURRENT" [(ngModel)]="newAccountType" />
+              <div class="tile-content">
+                <strong>Commercial Current Account</strong>
+                <span>Higher transaction velocity, designed for business liquidity</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-actions-bar">
+          <button type="button" class="btn-ghost" (click)="showCreateModal = false">Cancel</button>
+          <button type="button" class="btn-primary" (click)="openAccount()">Confirm &amp; Open Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-header>

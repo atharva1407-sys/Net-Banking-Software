@@ -1,0 +1,170 @@
+<app-header [pageTitle]="'Account Statements'" [pageSubtitle]="'Generate, verify, and export official periodic financial statements for your accounts.'" [pageKicker]="'FINANCIAL REPORTING'">
+  <div class="statements-page-wrap">
+    <!-- Top Action Group -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+      <button type="button" class="btn-primary export-btn" (click)="downloadCsv()" [disabled]="!statement || isLoading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Export Statement (.CSV)</span>
+      </button>
+    </div>
+
+    <!-- Parameter Filter Card -->
+    <div class="filter-controls-card">
+      <div class="filter-item account-grow">
+        <label class="filter-label">SELECT ACCOUNT</label>
+        <div class="custom-select-wrap">
+          <select [(ngModel)]="selectedAccountId" class="fintech-select">
+            <option *ngFor="let acc of accounts" [value]="acc.id">
+              {{ acc.accountType }} ({{ acc.maskedAccountNumber }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">START DATE</label>
+        <input type="date" [(ngModel)]="startDate" class="fintech-input date-input" />
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">END DATE</label>
+        <input type="date" [(ngModel)]="endDate" class="fintech-input date-input" />
+      </div>
+
+      <div class="filter-item btn-item">
+        <button type="button" class="btn-primary generate-btn" (click)="generateStatement()" [disabled]="isLoading">
+          <span *ngIf="!isLoading">View Statement</span>
+          <span *ngIf="isLoading">Generating...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State with Skeleton Shimmer Rows -->
+    <div *ngIf="isLoading" class="skeleton-shimmer-container">
+      <div class="skeleton-metric-row">
+        <div class="skeleton-card shimmer-anim"></div>
+        <div class="skeleton-card shimmer-anim"></div>
+        <div class="skeleton-card shimmer-anim"></div>
+        <div class="skeleton-card shimmer-anim"></div>
+      </div>
+      <div class="skeleton-table-panel shimmer-anim"></div>
+    </div>
+
+    <!-- Statement View -->
+    <div *ngIf="!isLoading && statement" class="statement-display-wrap">
+      <!-- 4 Stat Tiles Grid -->
+      <div class="fintech-grid stat-tiles-grid">
+        <!-- 1. Opening Balance -->
+        <div class="col-span-3 stat-metric-tile">
+          <div class="tile-header">
+            <span class="tile-kicker">OPENING BALANCE</span>
+            <span class="tile-sub-date">As of {{ statement.startDate | date:'mediumDate' }}</span>
+          </div>
+          <div class="tile-balance-row">
+            <span class="curr-prefix">₹</span>
+            <span class="tile-amount">{{ statement.openingBalance | number:'1.2-2' }}</span>
+          </div>
+          <span class="tile-footer-note">Initial period liquid balance</span>
+        </div>
+
+        <!-- 2. Total Debits -->
+        <div class="col-span-3 stat-metric-tile debit-tile">
+          <div class="tile-header">
+            <span class="tile-kicker">TOTAL DEBITS</span>
+            <span class="direction-pill debit">Outflow</span>
+          </div>
+          <div class="tile-balance-row text-negative">
+            <span class="curr-prefix">- ₹</span>
+            <span class="tile-amount">{{ statement.totalDebits | number:'1.2-2' }}</span>
+          </div>
+          <span class="tile-footer-note">Total funds debited in period</span>
+        </div>
+
+        <!-- 3. Total Credits -->
+        <div class="col-span-3 stat-metric-tile credit-tile">
+          <div class="tile-header">
+            <span class="tile-kicker">TOTAL CREDITS</span>
+            <span class="direction-pill credit">Inflow</span>
+          </div>
+          <div class="tile-balance-row text-positive">
+            <span class="curr-prefix">+ ₹</span>
+            <span class="tile-amount">{{ statement.totalCredits | number:'1.2-2' }}</span>
+          </div>
+          <span class="tile-footer-note">Total funds credited in period</span>
+        </div>
+
+        <!-- 4. Closing Balance (Hero Glow Style) -->
+        <div class="col-span-3 stat-metric-tile closing-hero-tile">
+          <div class="tile-header">
+            <span class="tile-kicker text-glow">CLOSING BALANCE</span>
+            <span class="tile-sub-date text-white-muted">As of {{ statement.endDate | date:'mediumDate' }}</span>
+          </div>
+          <div class="tile-balance-row text-white">
+            <span class="curr-prefix">₹</span>
+            <span class="tile-amount">{{ statement.closingBalance | number:'1.2-2' }}</span>
+          </div>
+          <span class="tile-footer-note text-white-muted">Final reconciled closing balance</span>
+        </div>
+      </div>
+
+      <!-- Statement Transaction Breakdown Table -->
+      <div class="statement-table-panel">
+        <div class="statement-table-head">
+          <div class="head-left">
+            <h4>Transactions in Period ({{ statement.transactions.length }})</h4>
+            <span class="statement-acc-badge">{{ statement.accountType }} •••• {{ statement.accountNumber.slice(-4) }}</span>
+          </div>
+          <div class="head-right">
+            <span class="currency-tag">All amounts in INR (₹)</span>
+          </div>
+        </div>
+
+        <div *ngIf="statement.transactions.length === 0" class="empty-state">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <p>No transaction records occurred during the selected date period.</p>
+        </div>
+
+        <div class="table-responsive-container" *ngIf="statement.transactions.length > 0">
+          <table class="fintech-ledger-table">
+            <thead>
+              <tr>
+                <th>DATE</th>
+                <th>REFERENCE ID</th>
+                <th>NARRATION / DESCRIPTION</th>
+                <th>DIRECTION</th>
+                <th class="text-right">AMOUNT (INR)</th>
+                <th class="text-right">RUNNING BALANCE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tx of statement.transactions" class="ledger-row">
+                <td class="date-cell">
+                  <span class="date-txt">{{ tx.createdAt | date:'mediumDate' }}</span>
+                  <small class="time-txt">{{ tx.createdAt | date:'shortTime' }}</small>
+                </td>
+                <td>
+                  <span class="ref-chip">{{ tx.transactionReference }}</span>
+                </td>
+                <td class="narration-cell">
+                  <span class="narration-txt">{{ tx.description || 'Ledger Settlement Entry' }}</span>
+                </td>
+                <td>
+                  <span class="direction-badge" [class.credit]="tx.direction === 'CREDIT'" [class.debit]="tx.direction === 'DEBIT'">
+                    <span class="dir-icon">{{ tx.direction === 'CREDIT' ? '↓' : '↑' }}</span>
+                    {{ tx.direction }}
+                  </span>
+                </td>
+                <td class="text-right amount-cell" [class.credit]="tx.direction === 'CREDIT'" [class.debit]="tx.direction === 'DEBIT'">
+                  {{ tx.direction === 'CREDIT' ? '+' : '-' }} ₹ {{ tx.amount | number:'1.2-2' }}
+                </td>
+                <td class="text-right balance-after-cell">
+                  ₹ {{ tx.balanceAfter | number:'1.2-2' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-header>

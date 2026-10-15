@@ -1,0 +1,468 @@
+/* ==========================================================================
+   SecureBank Components & Widget Styling
+   ========================================================================== */
+
+/* Universal Card / Widget Container */
+.fintech-card {
+  background-color: var(--panel-bg);
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
+  padding: var(--panel-padding);
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.fintech-card:hover {
+  border-color: var(--panel-border-hover);
+  transform: translateY(-2px);
+}
+
+/* Card Header with Title & Outlined Action Button */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface-inner);
+  border: var(--surface-border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.card-action-btn:hover {
+  background: var(--surface-inner-hover);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Delta Chips (Green / Red indicator + From last month) */
+.delta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.delta-chip.positive {
+  background-color: var(--color-positive-bg);
+  color: var(--color-positive);
+}
+
+.delta-chip.negative {
+  background-color: var(--color-negative-bg);
+  color: var(--color-negative);
+}
+
+.delta-context {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* Big Balance Display */
+.metric-amount {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 4px 0 10px 0;
+  font-family: 'JetBrains Mono', 'Plus Jakarta Sans', sans-serif;
+  font-feature-settings: "tnum";
+}
+
+/* Metadata Chips (e.g., 44 transactions, 1 account) */
+.chip-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-inner);
+  border: var(--surface-border);
+  border-radius: var(--surface-radius-sm);
+  padding: 5px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--primary-text);
+  border: none;
+  border-radius: var(--surface-radius);
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  box-shadow: var(--primary-glow);
+  transition: all var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ghost {
+  background: var(--surface-inner);
+  color: var(--text-secondary);
+  border: var(--surface-border);
+  border-radius: var(--surface-radius);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-inner-hover);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Period Selector Chip (Top Bar Left) */
+.period-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-inner);
+  border: var(--surface-border);
+  border-radius: var(--surface-radius);
+  padding: 8px 14px;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.period-selector svg {
+  color: var(--text-secondary);
+}
+
+/* Hero Insight Glow Card (Gradient Blue/Indigo) */
+.hero-insight-card {
+  background: var(--hero-gradient);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--panel-radius);
+  padding: 26px;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--hero-glow);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+}
+
+.hero-insight-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  width: fit-content;
+}
+
+.hero-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.hero-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.hero-dot.active {
+  width: 14px;
+  border-radius: 3px;
+  background: #FFFFFF;
+}
+
+.hero-message {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 18px 0 0 0;
+  color: #FFFFFF;
+  max-width: 90%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Semi-circular Gauge Card */
+.gauge-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.gauge-svg {
+  width: 100%;
+  max-width: 220px;
+  overflow: visible;
+}
+
+.gauge-center-text {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.gauge-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+.gauge-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', sans-serif;
+}
+
+.gauge-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.legend-dot.blue { background-color: var(--primary); }
+.legend-dot.grey { background-color: rgba(255, 255, 255, 0.2); }
+
+/* Form Controls (Inputs, Selects) */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+  background-color: var(--surface-inner);
+  border: var(--surface-border);
+  color: var(--text-primary);
+  border-radius: var(--surface-radius);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  box-sizing: border-box;
+  outline: none;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 91, 255, 0.2);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Tables (Ledger & Statements) */
+.fintech-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--surface-radius);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fintech-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.fintech-table th {
+  padding: 12px 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--divider);
+  background: var(--surface-inner);
+}
+
+.fintech-table td {
+  padding: 14px 16px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--divider);
+  vertical-align: middle;
+}
+
+.fintech-table tbody tr {
+  transition: background-color var(--transition-fast);
+}
+
+.fintech-table tbody tr:hover {
+  background-color: var(--surface-inner-hover);
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Monospace Reference Code Chip */
+.ref-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: var(--primary);
+  background: var(--primary-subtle);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Direction Status Badges */
+.badge-direction {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+
+.badge-direction.credit {
+  background: var(--color-positive-bg);
+  color: var(--color-positive);
+}
+
+.badge-direction.debit {
+  background: var(--color-negative-bg);
+  color: var(--color-negative);
+}
+
+/* Modal Backdrops & Dialogs */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 6, 15, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-card {
+  background-color: var(--panel-bg-elevated);
+  border: var(--panel-border-hover);
+  border-radius: var(--panel-radius);
+  padding: 28px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  box-sizing: border-box;
+}
