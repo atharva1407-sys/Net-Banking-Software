@@ -9,6 +9,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%2B-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0_Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:8080/swagger-ui.html)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/atharva1407-sys/Net-Banking-Software?style=for-the-badge&color=orange)](CONTRIBUTORS.md)
 
 **An enterprise-grade, full-stack net banking simulation engineered with balanced double-entry ledger bookkeeping, stateless JWT authentication, idempotent fund transfers, and a reactive Indian retail banking user interface.**
 
@@ -651,10 +652,9 @@ This project is licensed under the **MIT License** — feel free to use and adap
 
 ---
 
-## 👨‍💻 Author & Acknowledgements
+## 👨‍💻 Team & Contributors
 
-**Atharva Mandlik**  
-- **GitHub:** [@atharva1407-sys](https://github.com/atharva1407-sys)  
-- **Repository:** [Net-Banking-Software](https://github.com/atharva1407-sys/Net-Banking-Software)
+- **Project Lead:** **Atharva Mandlik** ([@atharva1407-sys](https://github.com/atharva1407-sys))
+- **Team Members:** See the full list of project contributors and roles in [**`CONTRIBUTORS.md`**](CONTRIBUTORS.md).
 
 *Special thanks to the Spring Boot, Angular, and Lucide Icons open-source communities for providing foundational tools for modern web software engineering.*
