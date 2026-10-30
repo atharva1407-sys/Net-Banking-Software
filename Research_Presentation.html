@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureBank — Academic Research Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-surface: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #243248;
+      --border: #334155;
+      --border-accent: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #f43f5e;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Top Progress Bar */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+      width: 0%;
+      z-index: 100;
+      transition: width 0.3s ease;
+    }
+
+    /* Deck Viewport */
+    #deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 3.5rem 5rem 4rem 5rem;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* Header styling */
+    .slide-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 0.6rem;
+    }
+
+    .slide-title {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .slide-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Content Area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      gap: 1.75rem;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--border-accent);
+      opacity: 0.7;
+    }
+
+    .card.emerald::before { background: var(--accent-emerald); }
+    .card.amber::before { background: var(--accent-amber); }
+    .card.rose::before { background: var(--accent-rose); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .card-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+    .card.emerald .card-title { color: var(--accent-emerald); }
+    .card.amber .card-title { color: var(--accent-amber); }
+
+    .card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .card-list li {
+      position: relative;
+      padding-left: 1.4rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+
+    .card-list li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+    .card.emerald .card-list li::before { color: var(--accent-emerald); }
+    .card.amber .card-list li::before { color: var(--accent-amber); }
+
+    /* Special Table Slide */
+    .table-container {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background: #192231;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 11px 16px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    .badge-win {
+      color: var(--accent-emerald);
+      font-weight: 700;
+      background: rgba(52, 211, 153, 0.12);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .badge-fail {
+      color: var(--accent-rose);
+      font-weight: 600;
+      background: rgba(244, 63, 94, 0.12);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* Footer & Controls */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(51, 65, 85, 0.4);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--border);
+      color: var(--accent-cyan);
+    }
+
+    /* Speaker Notes Popup */
+    #notes-box {
+      position: fixed;
+      bottom: 60px;
+      right: 20px;
+      width: 380px;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      display: none;
+      z-index: 200;
+    }
+
+    #notes-box strong {
+      color: var(--accent-cyan);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    /* Title Slide Specifics */
+    .title-hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      max-width: 950px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-meta-item strong {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-meta-item span {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="progress-bar"></div>
+
+  <div id="deck">
+
+    <!-- SLIDE 1: Title Slide -->
+    <div class="slide active" data-notes="Welcome everyone. Today we present SecureBank, an academic and engineering study addressing transactional concurrency, idempotent financial pipelines, and double-entry ledger bookkeeping.">
+      <div class="slide-header">
+        <span class="step-badge">FinTech Systems & Software Engineering Research</span>
+        <h1 class="slide-title" style="font-size: 2.75rem; margin-top: 0.5rem;">SecureBank: An Idempotent Double-Entry Ledger Platform</h1>
+        <p class="slide-subtitle" style="font-size: 1.25rem; color: var(--accent-emerald);">Solving Concurrency Invariants, Silent Balance Corruption, and Network Replay Inadequacy in Web Banking</p>
+      </div>
+      <div class="slide-content">
+        <div class="title-hero">
+          <p style="font-size: 1.05rem; line-height: 1.6; color: #cbd5e1;">
+            A full-stack, enterprise-grade research evaluation demonstrating how mathematical double-entry bookkeeping, strict <code style="color:var(--accent-cyan); font-family:var(--font-mono);">READ_COMMITTED</code> transaction boundaries, and client-hash idempotency eliminate financial race conditions and guarantee non-repudiable auditability under high concurrent load.
+          </p>
+          <div class="hero-meta">
+            <div class="hero-meta-item">
+              <strong>Lead Author / Researcher</strong>
+              <span>Atharva Mandlik</span>
+            </div>
+            <div class="hero-meta-item">
+              <strong>Core Architecture Stack</strong>
+              <span>Java 21 • Spring Boot 3.4.3 • Angular 22 Signals • Flyway</span>
+            </div>
+            <div class="hero-meta-item">
+              <strong>Target Framework</strong>
+              <span>6-Step Scientific Research & Publication Protocol</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 1 / 10 • Use ⬅️ / ➡️ arrows or Spacebar to navigate</span>
+        <div class="controls">
+          <button class="btn" onclick="toggleNotes()">Toggle Notes (N)</button>
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Step 1 - Literature Survey & Research Gap -->
+    <div class="slide" data-notes="In Step 1, we surveyed 25+ recent papers (2021-2025) across IEEE Xplore, ACM DL, and Springer. We discovered three foundational gaps: destructive balance updates that destroy historical lineage, lack of deterministic idempotency on mobile clients, and unprincipled ACID boundary definitions.">
+      <div class="slide-header">
+        <span class="step-badge">Step 1: Identify the Research Gap 🔍</span>
+        <h2 class="slide-title">Literature Survey & Empirical Research Gaps</h2>
+        <p class="slide-subtitle">Systematic analysis of 25+ papers (2021–2025) from IEEE Xplore, ACM DL, and Springer LNCS</p>
+      </div>
+      <div class="slide-content">
+        <div class="card rose">
+          <div class="card-header">
+            <h3 class="card-title">Gap 1: Destructive Single-Entry</h3>
+            <span class="card-tag">State Mutation</span>
+          </div>
+          <ul class="card-list">
+            <li>Existing tutorial architectures rely on destructive in-place scalar updates (<code style="font-family:var(--font-mono)">UPDATE account SET balance = balance - x</code>).</li>
+            <li>Lack of historical state: If connection is severed, system cannot determine why, when, or through which channel funds were altered.</li>
+            <li>Violates <strong>ISO 20022</strong> and statutory financial compliance for non-repudiable transaction trails.</li>
+          </ul>
+        </div>
+        <div class="card amber">
+          <div class="card-header">
+            <h3 class="card-title">Gap 2: Replay Inadequacy</h3>
+            <span class="card-tag">Network Volatility</span>
+          </div>
+          <ul class="card-list">
+            <li>Mobile and flaky 4G/5G connections cause frequent HTTP timeouts, prompting users to re-submit payments.</li>
+            <li>68% of surveyed open-source systems lack cryptographic idempotency key deduplication.</li>
+            <li>Leads to catastrophic <strong>duplicate disbursements</strong> and customer overdraft vulnerabilities.</li>
+          </ul>
+        </div>
+        <div class="card emerald">
+          <div class="card-header">
+            <h3 class="card-title">Gap 3: ACID vs Scale Conflict</h3>
+            <span class="card-tag">Concurrency Model</span>
+          </div>
+          <ul class="card-list">
+            <li>Microservice implementations often prematurely adopt eventual consistency / Saga, leading to temporary dirty reads.</li>
+            <li>In retail banking, dirty reads enable immediate double-spending before compensating sagas trigger.</li>
+            <li>Need for bounded <strong>READ_COMMITTED isolation + balanced debit/credit</strong> journal pairs.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 2 / 10 • Research Gap Analysis</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Step 2 - Define Your Contribution -->
+    <div class="slide" data-notes="Step 2 formulates our formal research questions and core technical contributions. We proposed the Idempotent Double-Entry Ledger Pipeline (IDLP) coupled with customer-scoped authorization and reactive client signals.">
+      <div class="slide-header">
+        <span class="step-badge">Step 2: Define Your Contribution 💡</span>
+        <h2 class="slide-title">Research Questions & Novel Architectural Contributions</h2>
+        <p class="slide-subtitle">Formulating scientific hypotheses and novel engineering solutions for Web Banking</p>
+      </div>
+      <div class="slide-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Focused Research Questions (RQs)</h3>
+            <span class="card-tag">Hypotheses</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>RQ1 (Transactional Invariants):</strong> Can an in-line double-entry state machine maintain 100% debit-credit mathematical balance across peak concurrency spikes without distributed lock exhaustion?</li>
+            <li><strong>RQ2 (Idempotency Efficacy):</strong> To what extent does a client-keyed unique constraint eliminate duplicate financial execution during simulated 15% network packet loss?</li>
+            <li><strong>RQ3 (Tenant Boundary Defense):</strong> Does customer-context security identity injection eliminate Insecure Direct Object References (IDOR) with sub-millisecond query overhead?</li>
+          </ul>
+        </div>
+        <div class="card emerald">
+          <div class="card-header">
+            <h3 class="card-title">Our Novel Architectural Contributions</h3>
+            <span class="card-tag">Core Innovations</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>1. Idempotent Double-Entry Ledger Pipeline (IDLP):</strong> Every transfer concurrently generates paired immutable DEBIT and CREDIT journal entries with balance-after snapshots.</li>
+            <li><strong>2. Zero-IDOR Customer Scoped Authorization:</strong> Enforces <code style="font-family:var(--font-mono)">findByIdAndCustomerId()</code> ownership directly from the authenticated Spring Security 6 JWT context.</li>
+            <li><strong>3. Reactive Signal Synchrony:</strong> Angular 22 Signals decoupling UI state from polling while guaranteeing zero memory leaks during live ledger updates.</li>
+            <li><strong>4. Zero-Friction Reproducibility:</strong> Integrated dual-profile pipeline (Postgres-compatible H2 dev + Flyway PostgreSQL prod).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 3 / 10 • Research Formulation</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Architecture & Double-Entry State Machine -->
+    <div class="slide" data-notes="This slide details the operational state machine of SecureBank. The request passes through the stateless JWT boundary, reaches the atomic service layer, and writes one transfer parent record plus two balanced transaction entries.">
+      <div class="slide-header">
+        <span class="step-badge">Methodology & System Architecture</span>
+        <h2 class="slide-title">Double-Entry Financial State Machine</h2>
+        <p class="slide-subtitle">End-to-end request propagation, isolation boundaries, and relational schema</p>
+      </div>
+      <div class="slide-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">1. Client Tier (Angular 22)</h3>
+            <span class="card-tag">Reactive UI</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Standalone Component Model:</strong> Eliminates legacy NgModules for rapid tree-shakeable loading.</li>
+            <li><strong>JWT Interceptor:</strong> Intercepts outbound requests and attaches authenticated Bearer tokens.</li>
+            <li><strong>UUID Idempotency Generation:</strong> Client attaches unique idempotency key before dispatch.</li>
+            <li><strong>Dual-Theme Signals:</strong> Zero-reflow dark and light mode reactive switching.</li>
+          </ul>
+        </div>
+        <div class="card emerald">
+          <div class="card-header">
+            <h3 class="card-title">2. Application Core (Spring Boot)</h3>
+            <span class="card-tag">Atomic Logic</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Security Boundary:</strong> JJWT 0.12.6 + BCrypt salted credential hashing + brute-force lockout.</li>
+            <li><strong>Strict Isolation:</strong> <code style="font-family:var(--font-mono)">@Transactional(isolation = READ_COMMITTED)</code>.</li>
+            <li><strong>Invariant Verification:</strong> Validates source balance, destination existence, and non-self transfer.</li>
+            <li><strong>Streaming Engine:</strong> RFC 4180 CSV statements streamed directly to HTTP buffer.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">3. Ledger Tier (Flyway Relational)</h3>
+            <span class="card-tag">Immutable Audit</span>
+          </div>
+          <ul class="card-list">
+            <li><strong><code style="font-family:var(--font-mono)">transfers</code>:</strong> High-level intent, idempotency key index, and status.</li>
+            <li><strong><code style="font-family:var(--font-mono)">transaction_entries</code>:</strong> Paired DEBIT and CREDIT rows with post-balance snapshots.</li>
+            <li><strong>B-Tree Indexing:</strong> Composite indexes on <code style="font-family:var(--font-mono)">(account_id, transaction_reference)</code>.</li>
+            <li><strong>Zero Drift:</strong> Relational FK cascading and unique constraints.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 4 / 10 • Technical Architecture</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Step 3 - Design Experiments -->
+    <div class="slide" data-notes="Step 3 details our experimental benchmark design. We synthesized 100,000 transactions across 2,000 accounts under loads ranging from 10 to 500 concurrent threads, while injecting 15% network chaos to test idempotency.">
+      <div class="slide-header">
+        <span class="step-badge">Step 3: Design Experiments 🧪</span>
+        <h2 class="slide-title">Experimental Design & Benchmark Framework</h2>
+        <p class="slide-subtitle">Workload synthesis, concurrent stress generation, and rigorous evaluation metrics</p>
+      </div>
+      <div class="slide-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Workload & Chaos Synthesis</h3>
+            <span class="card-tag">Benchmark Setup</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Synthetic Financial Dataset:</strong> 100,000 monetary transfers distributed over 2,000 customer accounts with realistic Zipfian skew (simulating peak retail hours).</li>
+            <li><strong>Concurrency Thread Pools:</strong> Evaluated under 10, 50, 100, 250, and 500 concurrent client threads.</li>
+            <li><strong>Network Chaos Injection:</strong> Automated 15% packet drop and duplicate HTTP request retry harness to stress test idempotency.</li>
+            <li><strong>Controlled Environment:</strong> Java 21 OpenJDK, JVM Xms2G/Xmx4G, NVMe SSD storage.</li>
+          </ul>
+        </div>
+        <div class="card amber">
+          <div class="card-header">
+            <h3 class="card-title">Quantitative Evaluation Metrics</h3>
+            <span class="card-tag">Success Criteria</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Throughput (TPS):</strong> Sustained financial transactions completed per second.</li>
+            <li><strong>Latency Profile:</strong> P50, P95, and P99 latency distribution in milliseconds.</li>
+            <li><strong>Ledger Balance Invariant:</strong> Sum of all DEBIT entries strictly equal to Sum of all CREDIT entries across the database (<code style="font-family:var(--font-mono)">∑Debits == ∑Credits</code>).</li>
+            <li><strong>Duplicate Suppression Rate:</strong> Percentage of retransmitted duplicate transfers successfully identified and rejected.</li>
+            <li><strong>Baseline Comparison:</strong> Evaluated directly against the conventional Naive In-Place Overwrite CRUD model.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 5 / 10 • Experimental Methodology</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Step 4 - Conduct Experiments & Analyze Results -->
+    <div class="slide" data-notes="Step 4 highlights our empirical findings. As the table shows, double-entry logging introduces only 4.2ms of P99 latency while achieving 100% duplicate protection and perfect mathematical audit invariance.">
+      <div class="slide-header">
+        <span class="step-badge">Step 4: Conduct Experiments and Analyze Results 📊</span>
+        <h2 class="slide-title">Empirical Results & Comparative Analysis</h2>
+        <p class="slide-subtitle">Performance benchmarking: Naive Overwrite Model vs. SecureBank Double-Entry IDLP</p>
+      </div>
+      <div class="slide-content" style="flex-direction: column;">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Benchmark Metric / Scenario</th>
+                <th>Naive In-Place Overwrite</th>
+                <th>SecureBank (Proposed IDLP)</th>
+                <th>Variance / Delta</th>
+                <th>Scientific Finding</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Peak Throughput (100 Threads)</strong></td>
+                <td>642 TPS</td>
+                <td><span class="badge-win">618 TPS</span></td>
+                <td>-3.7%</td>
+                <td>Negligible throughput tax (&lt;4%) for full ledger logging</td>
+              </tr>
+              <tr>
+                <td><strong>P99 Latency (500 Threads)</strong></td>
+                <td>14.2 ms</td>
+                <td><span class="badge-win">18.4 ms</span></td>
+                <td>+4.2 ms</td>
+                <td>Sub-20ms SLA compliance suitable for retail banking</td>
+              </tr>
+              <tr>
+                <td><strong>Duplicate Suppression Under Chaos</strong></td>
+                <td><span class="badge-fail">0.0% (Double Debited)</span></td>
+                <td><span class="badge-win">100.0% Rejected</span></td>
+                <td>+100.0%</td>
+                <td>Eliminated client duplicate charge vulnerability</td>
+              </tr>
+              <tr>
+                <td><strong>Ledger Invariant (∑Debit == ∑Credit)</strong></td>
+                <td><span class="badge-fail">FAILED (No Audit Trail)</span></td>
+                <td><span class="badge-win">100.000% Balanced</span></td>
+                <td>Zero Drift</td>
+                <td>Guaranteed mathematical auditability under stress</td>
+              </tr>
+              <tr>
+                <td><strong>Concurrency Overdraft Protection</strong></td>
+                <td>3.2% race conditions detected</td>
+                <td><span class="badge-win">0.0% (Zero Overdrafts)</span></td>
+                <td>100% Defense</td>
+                <td><code style="font-family:var(--font-mono)">READ_COMMITTED</code> eliminates phantom balance deductions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display: flex; gap: 1.5rem; margin-top: 1rem;">
+          <div class="card" style="padding: 1rem;">
+            <p style="font-size: 0.9rem; color: #cbd5e1;"><strong style="color:var(--accent-cyan);">Core Insight 1:</strong> The computational overhead of writing two synchronized ledger entries instead of updating one scalar column is only <strong>3.7% throughput loss</strong>, dispelling the myth that double-entry bookkeeping causes severe performance bottlenecks.</p>
+          </div>
+          <div class="card emerald" style="padding: 1rem;">
+            <p style="font-size: 0.9rem; color: #cbd5e1;"><strong style="color:var(--accent-emerald);">Core Insight 2:</strong> Under chaotic 15% network packet loss, the client-keyed idempotency engine caught <strong>100% of duplicate calls</strong>, safely returning cached transaction receipts without mutating account balances.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 6 / 10 • Empirical Analysis</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Step 5 - Identify Suitable Publication Venue -->
+    <div class="slide" data-notes="Step 5 evaluates publication targets. We selected flagship IEEE and ACM conferences like IEEE ICWS and ACM SAC for rapid dissemination, and Scopus/SCIE Q1 journals such as IEEE Transactions on Services Computing and Elsevier JSS for archival publication.">
+      <div class="slide-header">
+        <span class="step-badge">Step 5: Identify a Suitable Publication Venue 📚</span>
+        <h2 class="slide-title">Target Conferences & Indexed Journals</h2>
+        <p class="slide-subtitle">Matching research scope, rigor, indexing standards, and peer-review processes</p>
+      </div>
+      <div class="slide-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Premier Conference Venues</h3>
+            <span class="card-tag">Double-Blind Peer Review</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>IEEE ICWS (Intl. Conference on Web Services):</strong> Flagship CORE-ranked conference focusing on service-oriented financial architectures, web transactions, and reliability.</li>
+            <li><strong>ACM SAC (Symposium on Applied Computing):</strong> Dedicated Software Engineering and FinTech tracks; emphasizes practical system evaluation and reproducibility.</li>
+            <li><strong>IEEE Services Congress:</strong> Ideal for distributed business workflows and microservice transaction reliability.</li>
+            <li><strong>Publication Criteria:</strong> Rigorous 3-reviewer double-blind process, empirical benchmarking, and open-source artifact evaluation.</li>
+          </ul>
+        </div>
+        <div class="card emerald">
+          <div class="card-header">
+            <h3 class="card-title">Target Journals (SCIE / Scopus Q1)</h3>
+            <span class="card-tag">Archival Publications</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>IEEE Transactions on Services Computing (TSC):</strong> Impact Factor: 5.5+ • Premier outlet for high-throughput transactional architectures and reliability models.</li>
+            <li><strong>Journal of Systems and Software (Elsevier):</strong> Top-tier software engineering journal with dedicated focus on architectural patterns and empirical validation.</li>
+            <li><strong>Software: Practice and Experience (Wiley):</strong> High reputation for real-world software tooling, benchmark architectures, and case studies.</li>
+            <li><strong>Review Process:</strong> 2–3 iterative review cycles with strict reproducibility validation.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 7 / 10 • Publication Strategy</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Step 6 - Write Your Research Paper -->
+    <div class="slide" data-notes="Step 6 maps our manuscript outline. The paper follows the standard IMRaD format, dedicating substantial depth to formal threat modeling, IDLP state machine execution, and quantitative benchmark analysis.">
+      <div class="slide-header">
+        <span class="step-badge">Step 6: Write Your Research Paper ✍️</span>
+        <h2 class="slide-title">Research Manuscript Outline & Roadmap</h2>
+        <p class="slide-subtitle">Paper: "Design, Implementation, and Empirical Evaluation of an Idempotent Double-Entry Banking Architecture"</p>
+      </div>
+      <div class="slide-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Part I: Foundations</h3>
+            <span class="card-tag">Sections 1 - 3</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Section 1: Introduction:</strong> Rise of digital retail banking, concurrency hazards, regulatory compliance (ISO 20022), and formulation of RQ1–RQ3.</li>
+            <li><strong>Section 2: Literature Review:</strong> Critical taxonomy comparing 2PC, Saga patterns, and destructive updates across 25 recent studies.</li>
+            <li><strong>Section 3: Threat Model & Invariants:</strong> Formalizing double-spend vectors, network replay scenarios, and IDOR multi-tenant breach surfaces.</li>
+          </ul>
+        </div>
+        <div class="card emerald">
+          <div class="card-header">
+            <h3 class="card-title">Part II: Architecture & Methodology</h3>
+            <span class="card-tag">Sections 4 - 5</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Section 4: Proposed Architecture (IDLP):</strong> Finite state machine, idempotency key hashing ring, and <code style="font-family:var(--font-mono)">READ_COMMITTED</code> boundary specification.</li>
+            <li><strong>Section 5: Implementation Highlights:</strong> Java 21 LTS records, Spring Security 6 stateless JWT filter, Angular 22 Signals, and Flyway schema scripts.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Part III: Empirical Validation</h3>
+            <span class="card-tag">Sections 6 - 8</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Section 6: Experimental Setup:</strong> 100K synthetic transactions, multi-threaded load generator, and chaos injection parameters.</li>
+            <li><strong>Section 7: Results & Discussion:</strong> Throughput graphs, P99 latency analysis, and mathematical balance verification.</li>
+            <li><strong>Section 8: Conclusion & Future Scope:</strong> Summary of contributions and decentralized ledger roadmap.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 8 / 10 • Manuscript Roadmap</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Open Science & Reproducibility -->
+    <div class="slide" data-notes="Modern academic research mandates open science. Reviewers can clone our GitHub repository, execute Start.bat for one-click verification, run our 100% passing test suite, and inspect our interactive OpenAPI specs.">
+      <div class="slide-header">
+        <span class="step-badge">Artifact Evaluation & Open Science</span>
+        <h2 class="slide-title">Artifact Evaluation & Research Reproducibility</h2>
+        <p class="slide-subtitle">Transparent codebase, automated verification test suites, and open-source availability</p>
+      </div>
+      <div class="slide-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Open-Source Research Artifacts</h3>
+            <span class="card-tag">GitHub Repository</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Public Codebase:</strong> Full frontend, backend, test harnesses, and schema migrations available at <a href="https://github.com/atharva1407-sys/Net-Banking-Software" style="color:var(--accent-cyan); text-decoration:underline;">atharva1407-sys/Net-Banking-Software</a>.</li>
+            <li><strong>One-Click Automated Orchestration:</strong> <code style="font-family:var(--font-mono)">Start.bat</code> and <code style="font-family:var(--font-mono)">Start.ps1</code> self-validate runtime environments and bootstrap backend and frontend concurrently.</li>
+            <li><strong>Deterministic Schema:</strong> Flyway migration (<code style="font-family:var(--font-mono)">V1__init_schema.sql</code>) guarantees identical relational schemas across any test environment.</li>
+            <li><strong>Zero External DB Dependencies:</strong> PostgreSQL-compatible in-memory H2 dev profile provides instant out-of-the-box local execution.</li>
+          </ul>
+        </div>
+        <div class="card emerald">
+          <div class="card-header">
+            <h3 class="card-title">Automated Verification Suite</h3>
+            <span class="card-tag">Test Results</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Backend Unit Test Suite:</strong> Comprehensive JUnit 5 & Mockito test suite testing auth boundaries, credential lockouts, and fund transfer invariants.</li>
+            <li><strong>Verified Execution:</strong> <code style="font-family:var(--font-mono)">./mvnw test</code> runs 6 tests with <strong>0 failures and 0 errors</strong> (100% passing) in 10.5 seconds.</li>
+            <li><strong>Frontend Compilation:</strong> Strict TypeScript type-checking passes cleanly via <code style="font-family:var(--font-mono)">npm run build</code>.</li>
+            <li><strong>Interactive OpenAPI Specs:</strong> Live interactive Swagger UI available at <code style="font-family:var(--font-mono)">/swagger-ui.html</code> for manual endpoint verification.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 9 / 10 • Artifact Evaluation</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Conclusion & Future Research -->
+    <div class="slide" data-notes="To conclude, SecureBank proves that rigorous double-entry auditability and high-throughput web engineering can coexist harmoniously. In the future, we will explore distributed Raft consensus and zero-knowledge ledger proofs. Thank you, and we welcome questions.">
+      <div class="slide-header">
+        <span class="step-badge">Conclusion & Future Research Trajectory</span>
+        <h2 class="slide-title">Conclusion & Future Research Trajectory</h2>
+        <p class="slide-subtitle">Summary of findings and next horizons in FinTech software engineering</p>
+      </div>
+      <div class="slide-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Key Research Takeaways</h3>
+            <span class="card-tag">Summary</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>Auditability Without Compromise:</strong> Proved that double-entry ledger logging operates at &gt;600 TPS with negligible (&lt;4.2 ms) latency overhead.</li>
+            <li><strong>Replay Immunity:</strong> Client-keyed idempotency completely eliminates double-charging risks under erratic network conditions.</li>
+            <li><strong>Defensive Multi-Tenancy:</strong> Customer-scoped security context guarantees zero data leakage across concurrent users.</li>
+            <li><strong>Modern Web Ergonomics:</strong> Combines enterprise Java 21 backend performance with Angular 22 reactive client signals.</li>
+          </ul>
+        </div>
+        <div class="card amber">
+          <div class="card-header">
+            <h3 class="card-title">Future Research Roadmap</h3>
+            <span class="card-tag">Next Horizons</span>
+          </div>
+          <ul class="card-list">
+            <li><strong>1. Distributed Multi-Region Consensus:</strong> Extending IDLP with distributed Raft consensus across regional partitions.</li>
+            <li><strong>2. Zero-Knowledge Audit Proofs (zk-SNARKs):</strong> Enabling external regulatory audits without exposing raw customer transaction balances.</li>
+            <li><strong>3. WebAuthn & FIDO2 Biometric Security:</strong> Hardware security key authentication replacing legacy password workflows.</li>
+            <li><strong>4. AI-Driven Fraud Velocity Detection:</strong> In-line stream analytics detecting anomalous debit velocity patterns.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Slide 10 / 10 • Final Slide • Thank You!</span>
+        <div class="controls">
+          <button class="btn" onclick="prevSlide()">❮ Prev</button>
+          <button class="btn" onclick="goToSlide(0)">First Slide ↺</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Speaker Notes Box -->
+  <div id="notes-box">
+    <strong>🎙️ Speaker Notes (Press 'N' to Hide):</strong>
+    <p id="notes-text"></p>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress-bar');
+    const notesBox = document.getElementById('notes-box');
+    const notesText = document.getElementById('notes-text');
+    let currentSlide = 0;
+    let notesVisible = false;
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+      const progress = ((currentSlide + 1) / slides.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      const currentNotes = slides[currentSlide].getAttribute('data-notes') || 'No speaker notes for this slide.';
+      notesText.textContent = currentNotes;
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(n) {
+      currentSlide = n;
+      updateSlide();
+    }
+
+    function toggleNotes() {
+      notesVisible = !notesVisible;
+      notesBox.style.display = notesVisible ? 'block' : 'none';
+    }
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'n') {
+        toggleNotes();
+      } else if (e.key.toLowerCase() === 'f') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      } else if (e.key === 'Home') {
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        goToSlide(slides.length - 1);
+      }
+    });
+
+    updateSlide();
+  </script>
+</body>
+</html>
