@@ -13,7 +13,7 @@
 
 **An enterprise-grade, full-stack net banking simulation engineered with balanced double-entry ledger bookkeeping, stateless JWT authentication, idempotent fund transfers, and a reactive Indian retail banking user interface.**
 
-[Explore Features](#-key-features) • [System Architecture](#-architecture--system-design) • [Quick Start](#-getting-started) • [API Docs](#-api-documentation) • [Demo Credentials](#-synthetic-demo-credentials)
+[Explore Features](#-key-features) • [System Architecture](#-architecture--system-design) • [ER Diagram](ER_DIAGRAM.md) • [Quick Start](#-getting-started) • [API Docs](#-api-documentation) • [Demo Credentials](#-synthetic-demo-credentials)
 
 </div>
 
@@ -258,6 +258,11 @@ sequenceDiagram
     API-->>Angular: 200 OK + Transfer Confirmation
     Angular-->>Customer: Display Payment Receipt Modal
 ```
+
+### 📊 Database Schema & Entity-Relationship (ER) Diagram
+
+A comprehensive Entity-Relationship diagram documenting primary/foreign keys, 1:1 and 1:N cardinalities, double-entry ledger invariants, and database index configurations is documented in:
+👉 [**`ER_DIAGRAM.md` — Full Entity-Relationship (ER) Diagram & Schema Specification**](ER_DIAGRAM.md)
 
 ---
 
